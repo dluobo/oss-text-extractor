@@ -1,2 +1,129 @@
-haddos_text-extractor
+TextExtractor
 =====================
+
+An RESTFul Web Service for Text extraction and analysis.
+TextExtractor support various binary format.
+
+- office documents (doc, docx, xls, xlsx, ppt, pptx, pub, vsd, odf, odt, odp)
+- pdf,
+- rtf,
+- rss,
+- html,
+- audio files, torrent,
+- images.
+
+### Open source license
+
+Apache 2
+
+### How to build
+
+Compiling the service requires Maven 2.2.1 and Java 7.
+ 
+Get the source code:
+
+    git clone https://github.com/opensearchserver/oss_text_extractor.git
+    
+Compile:
+
+    mvn clean package
+
+### Starting the server
+
+TextExtractor works on Linux, Windows, Mac OS with a JAVA 7.
+To run the server, open a shell and start the daemon:
+
+    java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
+    
+The default TCP port is 9091. To change it use the the -port option.
+
+    java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar -port 9092
+
+### APIs
+
+#### Obtain the parser list
+
+Method: GET
+URL: http://{hostname}:{port}/
+
+    curl -XGET http://localhost:9091
+    
+```json
+["doc","docx","pdfbox"]
+```
+
+#### Get information about a parser
+
+Method: GET
+URL: http://{hostname}:{port}/{parser_name}
+
+    curl -XGET http://localhost:9091/pdfbox
+    
+```json
+{
+  "fields":
+  	[
+		{"name":"title", "type":"STRING", "description":"The title of the Word document"},
+		{"name":"author","type":"STRING","description":"The name of the author"},
+		{"name":"subject","type":"STRING","description":"The subject of the document"},
+		{"name":"content","type":"STRING","description":"The content of the document"},
+		{"name":"producer","type":"STRING","description":"The producer of the document"},
+		{"name":"keywords","type":"STRING","description":"The keywords of the document"},
+		{"name":"creation_date","type":"DATE"},{"name":"modification_date","type":"DATE"},
+		{"name":"language","type":"STRING"},{"name":"number_of_pages","type":"INTEGER"}
+	]
+}
+```
+    
+#### Submit a document to a parser
+
+Method: PUT
+URL: http://{hostname}:{port}/{parser_name}
+Payload: The document
+
+    curl -XPUT --data @tutorial.pdf http://localhost:9091/pdf
+    
+If the file is already available in the server, the follow API is available:
+
+Method: GET
+URL: http://{hostname}:{port}/{parser_name}?path=file_path
+
+    curl -XPUT --data @tutorial.pdf http://localhost:9091/pdf
+
+```json
+{
+	"time_elapsed":1772,
+	"documents":
+		[
+			{
+				"fields":
+					{
+						"content":
+							[
+								"Table of contents Requirements Getting Started Deleting Querying Data Sorting Text  Analysis Debugging"
+							],
+						"character_count":[13634],
+						"number_of_pages":[7],
+						"producer":["FOP 0.20.5"]
+					}
+			}
+		]
+}
+```
+
+### Contribute
+
+Writing a parser is easy. Just extends the abstract class com.opensearchserver.textextractor.ParserAbstract and implements the required methods.
+
+```java
+protected void parseContent(InputStream inputStream) throws IOException;
+```
+
+The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...).
+
+A Parser Document is a list of name/value pair.
+
+Have a look at the Docx class to see a simple example.
+
+--
+Copyright OpenSearchServer Inc. 2014
