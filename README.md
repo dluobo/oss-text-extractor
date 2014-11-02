@@ -1,8 +1,8 @@
-TextExtractor
-=====================
+OSSTextExtractor
+================
 
-An RESTFul Web Service for Text extraction and analysis.
-TextExtractor support various binary format.
+An RESTFul Web Service for text extraction and analysis.
+OSSTextExtractor support various binary formats.
 
 - office documents (doc, docx, xls, xlsx, ppt, pptx, pub, vsd, odf, odt, odp)
 - pdf,
@@ -12,11 +12,7 @@ TextExtractor support various binary format.
 - audio files, torrent,
 - images.
 
-### Open source license
-
-Apache 2
-
-### How to build
+## How to build
 
 Compiling the service requires Maven 2.2.1 and Java 7.
  
@@ -28,7 +24,7 @@ Compile:
 
     mvn clean package
 
-### Starting the server
+## Starting the server
 
 TextExtractor works on Linux, Windows, Mac OS with a JAVA 7.
 To run the server, open a shell and start the daemon:
@@ -39,12 +35,12 @@ The default TCP port is 9091. To change it use the the -port option.
 
     java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar -port 9092
 
-### APIs
+## APIs
 
-#### Obtain the parser list
+### Obtain the parser list
 
-Method: GET
-URL: http://{hostname}:{port}/
+* Method: GET
+* URL: http://{hostname}:{port}/
 
     curl -XGET http://localhost:9091
     
@@ -52,10 +48,10 @@ URL: http://{hostname}:{port}/
 ["doc","docx","pdfbox"]
 ```
 
-#### Get information about a parser
+### Get information about a parser
 
-Method: GET
-URL: http://{hostname}:{port}/{parser_name}
+* Method: GET
+* URL: http://{hostname}:{port}/{parser_name}
 
     curl -XGET http://localhost:9091/pdfbox
     
@@ -75,20 +71,20 @@ URL: http://{hostname}:{port}/{parser_name}
 }
 ```
     
-#### Submit a document to a parser
+### Submit a document to a parser
 
-Method: PUT
-URL: http://{hostname}:{port}/{parser_name}
-Payload: The document
+* Method: PUT
+* URL: http://{hostname}:{port}/{parser_name}
+* Payload: The document
 
-    curl -XPUT --data @tutorial.pdf http://localhost:9091/pdf
+    curl -XPUT --data-binary @tutorial.pdf http://localhost:9091/pdfbox
     
 If the file is already available in the server, the follow API is available:
 
-Method: GET
-URL: http://{hostname}:{port}/{parser_name}?path=file_path
+* Method: GET
+* URL: http://{hostname}:{port}/{parser_name}?path=file_path
 
-    curl -XPUT --data @tutorial.pdf http://localhost:9091/pdf
+    curl -XGET http://localhost:9091/pdfbox?path=/home/manu/tutorial.pdf
 
 ```json
 {
@@ -111,7 +107,7 @@ URL: http://{hostname}:{port}/{parser_name}?path=file_path
 }
 ```
 
-### Contribute
+## Contribute
 
 Writing a parser is easy. Just extends the abstract class com.opensearchserver.textextractor.ParserAbstract and implements the required methods.
 
@@ -119,11 +115,56 @@ Writing a parser is easy. Just extends the abstract class com.opensearchserver.t
 protected void parseContent(InputStream inputStream) throws IOException;
 ```
 
-The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...).
-
-A Parser Document is a list of name/value pair.
+The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...). A Parser Document is a list of name/value pair.
 
 Have a look at the Docx class to see a simple example.
 
---
-Copyright OpenSearchServer Inc. 2014
+```java
+	@Override
+	protected void parseContent(InputStream inputStream) throws IOException {
+		
+		// Obtain a new parser document.
+		ParserDocument parserDocument = getNewParserDocument();
+
+		// Open the document using the inputStream
+		XWPFDocument document = new XWPFDocument(inputStream);
+		XWPFWordExtractor word = null;
+		try {
+			word = new XWPFWordExtractor(document);
+
+			// Extract the meta data
+			CoreProperties info = word.getCoreProperties();
+			
+			if (info != null) {
+			
+				// Fill the ParserDocument
+				parserDocument.add(TITLE, info.getTitle());
+				parserDocument.add(CREATOR, info.getCreator());
+				parserDocument.add(SUBJECT, info.getSubject());
+				parserDocument.add(DESCRIPTION, info.getDescription());
+				parserDocument.add(KEYWORDS, info.getKeywords());
+			}
+			
+			parserDocument.add(CONTENT, word.getText());
+
+		} finally {
+			IOUtils.closeQuietly(word);
+		}
+	}
+```
+
+## License
+
+Copyright 2014 OpenSearchServer Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
