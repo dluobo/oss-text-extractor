@@ -131,7 +131,7 @@ The parser extracts the text information using the following JSON format:
 
 ## Contribute
 
-Writing a parser is easy. Just extends the abstract class com.opensearchserver.textextractor.ParserAbstract and implements the required methods.
+Writing a parser is easy. Just extends the abstract class [ParserAbstract](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/ParserAbstract.java) and implements the required methods.
 
 ```java
 protected void parseContent(InputStream inputStream) throws IOException;
@@ -139,7 +139,7 @@ protected void parseContent(InputStream inputStream) throws IOException;
 
 The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...). A Parser Document is a list of name/value pair.
 
-Have a look at the Docx class to see a simple example.
+Have a look at the [Docx](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/Docx.java) class to see a simple example.
 
 ```java
 	@Override
@@ -184,8 +184,8 @@ Have a look at the Docx class to see a simple example.
 
 ## License
 
-Copyright 2014 OpenSearchServer Inc.
-http://www.opensearchserver.com
+Copyright 2014 [OpenSearchServer Inc.](http://www.opensearchserver.com)
+
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
