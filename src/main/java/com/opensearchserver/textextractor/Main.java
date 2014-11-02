@@ -24,6 +24,12 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -39,9 +45,22 @@ public class Main extends Application {
 		return classes;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
+		Options options = new Options();
+		options.addOption("help", false, "print this message");
+		options.addOption("port", true, "TCP port");
+		CommandLineParser parser = new GnuParser();
+		CommandLine cmd = parser.parse(options, args);
+		if (cmd.hasOption("help")) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("java -jar target/oss-text-extractor.jar",
+					options);
+			return;
+		}
+		int port = cmd.hasOption("port") ? Integer.parseInt(cmd
+				.getOptionValue("port")) : 9091;
 		UndertowJaxrsServer server = new UndertowJaxrsServer().start(Undertow
-				.builder().addHttpListener(9091, "localhost"));
+				.builder().addHttpListener(port, "localhost"));
 		server.deploy(Main.class);
 	}
 }

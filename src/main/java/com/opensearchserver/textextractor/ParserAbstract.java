@@ -56,6 +56,12 @@ public abstract class ParserAbstract {
 	 */
 	protected abstract ParserField[] getFields();
 
+	/**
+	 * Read a document a populate the ParserDocument list.
+	 * 
+	 * @param inputStream
+	 * @throws IOException
+	 */
 	protected abstract void parseContent(InputStream inputStream)
 			throws IOException;
 
