@@ -18,22 +18,30 @@ Compiling the service requires Maven 2.2.1 and Java 7.
  
 Get the source code:
 
-    git clone https://github.com/opensearchserver/oss_text_extractor.git
+```shell
+git clone https://github.com/opensearchserver/oss_text_extractor.git
+```
     
 Compile:
 
-    mvn clean package
+```shell
+mvn clean package
+```
 
 ## Starting the server
 
 TextExtractor works on Linux, Windows, Mac OS with a JAVA 7.
 To run the server, open a shell and start the daemon:
 
-    java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
-    
+```shell
+java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
+```
+
 The default TCP port is 9091. To change it use the the -port option.
 
-    java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar -port 9092
+```shell
+java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar -port 9092
+```
 
 ## APIs
 
@@ -42,8 +50,12 @@ The default TCP port is 9091. To change it use the the -port option.
 * Method: GET
 * URL: http://{hostname}:{port}/
 
-    curl -XGET http://localhost:9091
-    
+```shell
+curl -XGET http://localhost:9091
+```
+
+The function return the list of available parsers.
+
 ```json
 ["doc","docx","pdfbox"]
 ```
@@ -53,8 +65,12 @@ The default TCP port is 9091. To change it use the the -port option.
 * Method: GET
 * URL: http://{hostname}:{port}/{parser_name}
 
-    curl -XGET http://localhost:9091/pdfbox
-    
+```shell
+curl -XGET http://localhost:9091/pdfbox
+```
+
+The function displays which fields are returned by the parser.
+
 ```json
 {
   "fields":
@@ -77,14 +93,20 @@ The default TCP port is 9091. To change it use the the -port option.
 * URL: http://{hostname}:{port}/{parser_name}
 * Payload: The document
 
-    curl -XPUT --data-binary @tutorial.pdf http://localhost:9091/pdfbox
+```shell
+curl -XPUT --data-binary @tutorial.pdf http://localhost:9091/pdfbox
+```
     
 If the file is already available in the server, the follow API is available:
 
 * Method: GET
 * URL: http://{hostname}:{port}/{parser_name}?path=file_path
 
-    curl -XGET http://localhost:9091/pdfbox?path=/home/manu/tutorial.pdf
+```shell
+curl -XGET http://localhost:9091/pdfbox?path=/home/manu/tutorial.pdf
+```
+
+The parser extracts the text information using the following JSON format:
 
 ```json
 {
@@ -124,20 +146,24 @@ Have a look at the Docx class to see a simple example.
 	protected void parseContent(InputStream inputStream) throws IOException {
 		
 		// Obtain a new parser document.
+		
 		ParserDocument parserDocument = getNewParserDocument();
 
 		// Open the document using the inputStream
+		
 		XWPFDocument document = new XWPFDocument(inputStream);
 		XWPFWordExtractor word = null;
 		try {
 			word = new XWPFWordExtractor(document);
 
 			// Extract the meta data
+			
 			CoreProperties info = word.getCoreProperties();
 			
 			if (info != null) {
 			
 				// Fill the ParserDocument
+				
 				parserDocument.add(TITLE, info.getTitle());
 				parserDocument.add(CREATOR, info.getCreator());
 				parserDocument.add(SUBJECT, info.getSubject());
@@ -148,6 +174,9 @@ Have a look at the Docx class to see a simple example.
 			parserDocument.add(CONTENT, word.getText());
 
 		} finally {
+		
+			// Free the resource
+			
 			IOUtils.closeQuietly(word);
 		}
 	}
