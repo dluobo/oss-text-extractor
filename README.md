@@ -4,13 +4,13 @@ OSSTextExtractor
 An RESTFul Web Service for text extraction and analysis.
 OSSTextExtractor support various binary formats.
 
-- office documents (doc, docx, xls, xlsx, ppt, pptx, pub, vsd, odf, odt, odp)
-- pdf,
-- rtf,
-- rss,
-- html,
-- audio files, torrent,
-- images.
+- Word processor (doc, docx, odt, rtf)
+- Spreadsheet (xls, xlsx, ods)
+- Presentation (ppt, pptx, odp)
+- Publishing (pdf, pub)
+- Web (rss, html/xhtml)
+- Medias (audio, images)
+- Others (vsd, text)
 
 ## How to build
 
@@ -106,26 +106,19 @@ If the file is already available in the server, the follow API is available:
 curl -XGET http://localhost:9091/pdfbox?path=/home/manu/tutorial.pdf
 ```
 
-The parser extracts the text information using the following JSON format:
+The parser extracts the metas and text information using the following JSON format:
 
 ```json
 {
-	"time_elapsed":1772,
-	"documents":
-		[
-			{
-				"fields":
-					{
-						"content":
-							[
-								"Table of contents Requirements Getting Started Deleting Querying Data Sorting Text  Analysis Debugging"
-							],
-						"character_count":[13634],
-						"number_of_pages":[7],
-						"producer":["FOP 0.20.5"]
-					}
-			}
-		]
+	"time_elapsed": 2735,
+	"metas": {
+		"number_of_pages": [7],
+		"producer": ["FOP 0.20.5"]
+	},
+	"documents": [ {
+		"content": ["Table of contents Requirements Getting Started Deleting Querying Data Sorting Text  Analysis Debugging"],
+		"character_count":[13634]
+	} ]
 }
 ```
 
@@ -134,51 +127,34 @@ The parser extracts the text information using the following JSON format:
 Writing a parser is easy. Just extends the abstract class [ParserAbstract](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/ParserAbstract.java) and implements the required methods.
 
 ```java
-protected void parseContent(InputStream inputStream) throws IOException;
+protected void parseContent(InputStream inputStream) throws Exception;
 ```
 
 The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...). A Parser Document is a list of name/value pair.
 
-Have a look at the [Docx](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/Docx.java) class to see a simple example.
+Have a look at the [Rtf](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/rtf.java) class to see a simple example.
 
 ```java
 	@Override
-	protected void parseContent(InputStream inputStream) throws IOException {
+	protected void parseContent(InputStream inputStream) throws Exception {
+
+		// Extract the text data
+		RTFEditorKit rtf = new RTFEditorKit();
+		Document doc = rtf.createDefaultDocument();
+		rtf.read(inputStream, doc, 0);
+
+		// Fill the metas
+		metas.add(TITLE, "title of the document");
 		
 		// Obtain a new parser document.
-		
-		ParserDocument parserDocument = getNewParserDocument();
+		ParserDocument result = getNewParserDocument();
 
-		// Open the document using the inputStream
-		
-		XWPFDocument document = new XWPFDocument(inputStream);
-		XWPFWordExtractor word = null;
-		try {
-			word = new XWPFWordExtractor(document);
+		// Fill the field of the ParserDocument
+		result.add(CONTENT, doc.getText(0, doc.getLength()));
 
-			// Extract the meta data
-			
-			CoreProperties info = word.getCoreProperties();
-			
-			if (info != null) {
-			
-				// Fill the ParserDocument
-				
-				parserDocument.add(TITLE, info.getTitle());
-				parserDocument.add(CREATOR, info.getCreator());
-				parserDocument.add(SUBJECT, info.getSubject());
-				parserDocument.add(DESCRIPTION, info.getDescription());
-				parserDocument.add(KEYWORDS, info.getKeywords());
-			}
-			
-			parserDocument.add(CONTENT, word.getText());
+		// Apply the language detection
+		result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 
-		} finally {
-		
-			// Free the resource
-			
-			IOUtils.closeQuietly(word);
-		}
 	}
 ```
 

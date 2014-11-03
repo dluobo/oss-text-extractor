@@ -18,6 +18,8 @@ package com.opensearchserver.textextractor;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -34,6 +36,9 @@ import javax.ws.rs.core.UriInfo;
 @Path("/")
 public class ParserService {
 
+	private static final Logger logger = Logger.getLogger(ParserService.class
+			.getName());
+
 	public final static String APPLICATION_JSON_UTF8 = "application/json;charset=UTF-8";
 
 	@GET
@@ -48,6 +53,7 @@ public class ParserService {
 	}
 
 	private void throwError(Exception e) {
+		logger.log(Level.WARNING, e.getMessage(), e);
 		throwError(Status.INTERNAL_SERVER_ERROR, e.getMessage());
 	}
 

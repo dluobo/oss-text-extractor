@@ -84,21 +84,21 @@ public class Odf extends ParserAbstract {
 		try {
 			if (document == null)
 				return;
-			ParserDocument result = getNewParserDocument();
 			Meta meta = document.getOfficeMetadata();
 			if (meta != null) {
-				result.add(CREATION_DATE, meta.getCreationDate());
-				result.add(MODIFICATION_DATE, meta.getDcdate());
-				result.add(TITLE, meta.getTitle());
-				result.add(SUBJECT, meta.getSubject());
-				result.add(CREATOR, meta.getCreator());
-				result.add(PRODUCER, meta.getGenerator());
-				result.add(KEYWORDS, meta.getKeywords());
-				result.add(LANGUAGE, meta.getLanguage());
+				metas.add(CREATION_DATE, meta.getCreationDate());
+				metas.add(MODIFICATION_DATE, meta.getDcdate());
+				metas.add(TITLE, meta.getTitle());
+				metas.add(SUBJECT, meta.getSubject());
+				metas.add(CREATOR, meta.getCreator());
+				metas.add(PRODUCER, meta.getGenerator());
+				metas.add(KEYWORDS, meta.getKeywords());
+				metas.add(LANGUAGE, meta.getLanguage());
 			}
 
 			OdfElement odfElement = document.getContentRoot();
 			if (odfElement != null) {
+				ParserDocument result = getNewParserDocument();
 				String text = TextExtractor.newOdfTextExtractor(odfElement)
 						.getText();
 				if (text != null) {

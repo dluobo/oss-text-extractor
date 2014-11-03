@@ -69,8 +69,6 @@ public class Docx extends ParserAbstract {
 	@Override
 	protected void parseContent(InputStream inputStream) throws IOException {
 
-		ParserDocument parserDocument = getNewParserDocument();
-
 		XWPFDocument document = new XWPFDocument(inputStream);
 		XWPFWordExtractor word = null;
 		try {
@@ -78,12 +76,13 @@ public class Docx extends ParserAbstract {
 
 			CoreProperties info = word.getCoreProperties();
 			if (info != null) {
-				parserDocument.add(TITLE, info.getTitle());
-				parserDocument.add(CREATOR, info.getCreator());
-				parserDocument.add(SUBJECT, info.getSubject());
-				parserDocument.add(DESCRIPTION, info.getDescription());
-				parserDocument.add(KEYWORDS, info.getKeywords());
+				metas.add(TITLE, info.getTitle());
+				metas.add(CREATOR, info.getCreator());
+				metas.add(SUBJECT, info.getSubject());
+				metas.add(DESCRIPTION, info.getDescription());
+				metas.add(KEYWORDS, info.getKeywords());
 			}
+			ParserDocument parserDocument = getNewParserDocument();
 			parserDocument.add(CONTENT, word.getText());
 			parserDocument.add(LANG_DETECTION,
 					languageDetection(CONTENT, 10000));

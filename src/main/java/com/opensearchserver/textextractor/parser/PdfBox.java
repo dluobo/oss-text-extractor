@@ -18,22 +18,20 @@ package com.opensearchserver.textextractor.parser;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 import com.opensearchserver.textextractor.ParserAbstract;
 import com.opensearchserver.textextractor.ParserDocument;
 import com.opensearchserver.textextractor.ParserField;
-import com.opensearchserver.textextractor.ParserList;
 
 public class PdfBox extends ParserAbstract {
 
@@ -64,6 +62,9 @@ public class PdfBox extends ParserAbstract {
 	final protected static ParserField LANGUAGE = ParserField.newString(
 			"language", null);
 
+	final protected static ParserField ROTATION = ParserField.newInteger(
+			"rotation", null);
+
 	final protected static ParserField NUMBER_OF_PAGES = ParserField
 			.newInteger("number_of_pages", null);
 
@@ -75,11 +76,7 @@ public class PdfBox extends ParserAbstract {
 
 	final protected static ParserField[] FIELDS = { TITLE, AUTHOR, SUBJECT,
 			CONTENT, PRODUCER, KEYWORDS, CREATION_DATE, MODIFICATION_DATE,
-			LANGUAGE, NUMBER_OF_PAGES, LANG_DETECTION };
-
-	static {
-		ParserList.register(PdfBox.class);
-	}
+			LANGUAGE, ROTATION, NUMBER_OF_PAGES, LANG_DETECTION };
 
 	public PdfBox() {
 	}
@@ -108,54 +105,37 @@ public class PdfBox extends ParserAbstract {
 		return cal.getTime();
 	}
 
-	private void extractMetaData(ParserDocument document, PDDocument pdf)
-			throws IOException {
+	private void extractMetaData(PDDocument pdf) throws IOException {
 		PDDocumentInformation info = pdf.getDocumentInformation();
 		if (info != null) {
-			document.add(TITLE, info.getTitle());
-			document.add(SUBJECT, info.getSubject());
-			document.add(AUTHOR, info.getAuthor());
-			document.add(PRODUCER, info.getProducer());
-			document.add(KEYWORDS, info.getKeywords());
-			document.add(CREATION_DATE, getDate(getCreationDate(info)));
-			document.add(MODIFICATION_DATE, getModificationDate(info));
+			metas.add(TITLE, info.getTitle());
+			metas.add(SUBJECT, info.getSubject());
+			metas.add(AUTHOR, info.getAuthor());
+			metas.add(PRODUCER, info.getProducer());
+			metas.add(KEYWORDS, info.getKeywords());
+			metas.add(CREATION_DATE, getDate(getCreationDate(info)));
+			metas.add(MODIFICATION_DATE, getModificationDate(info));
 		}
 		int pages = pdf.getNumberOfPages();
-		document.add(NUMBER_OF_PAGES, pages);
+		metas.add(NUMBER_OF_PAGES, pages);
 		PDDocumentCatalog catalog = pdf.getDocumentCatalog();
 		if (catalog != null)
-			document.add(LANGUAGE, catalog.getLanguage());
+			metas.add(LANGUAGE, catalog.getLanguage());
 	}
 
 	/**
 	 * Extract text content using PDFBox
 	 * 
-	 * @param result
 	 * @param pdf
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private int extractTextContent(ParserDocument document, PDDocument pdf)
-			throws IOException {
-		PDFTextStripper stripper = new PDFTextStripper();
-		String text = stripper.getText(pdf);
-		if (StringUtils.isEmpty(text))
-			return 0;
-		document.add(CONTENT, text);
-		return text.length();
-	}
-
-	private void parseContent(PDDocument pdf) throws IOException {
+	private void parseContent(PDDocument pdf) throws Exception {
 		try {
 			if (pdf.isEncrypted())
 				pdf.openProtection(new StandardDecryptionMaterial(""));
-			ParserDocument document = getNewParserDocument();
-			extractMetaData(document, pdf);
-			document.add(CHARACTER_COUNT, extractTextContent(document, pdf));
-			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
-		} catch (BadSecurityHandlerException e) {
-			throw new IOException(e);
-		} catch (CryptographyException e) {
-			throw new IOException(e);
+			extractMetaData(pdf);
+			Stripper stripper = new Stripper();
+			stripper.getText(pdf);
 		} finally {
 			if (pdf != null)
 				pdf.close();
@@ -163,12 +143,12 @@ public class PdfBox extends ParserAbstract {
 	}
 
 	@Override
-	public void parseContent(InputStream inputStream) throws IOException {
+	public void parseContent(InputStream inputStream) throws Exception {
 		parseContent(PDDocument.loadNonSeq(inputStream, null));
 	}
 
 	@Override
-	public void parseContent(File file) throws IOException {
+	public void parseContent(File file) throws Exception {
 		parseContent(PDDocument.loadNonSeq(file, null));
 	}
 
@@ -182,4 +162,22 @@ public class PdfBox extends ParserAbstract {
 		return FIELDS;
 	}
 
+	public class Stripper extends PDFTextStripper {
+
+		public Stripper() throws IOException {
+			super();
+		}
+
+		@Override
+		protected void endPage(PDPage page) throws IOException {
+			super.endPage(page);
+			ParserDocument document = getNewParserDocument();
+			String text = output.toString();
+			document.add(CHARACTER_COUNT, text.length());
+			document.add(CONTENT, text);
+			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
+			document.add(ROTATION, page.findRotation());
+			output = new StringWriter();
+		}
+	}
 }
