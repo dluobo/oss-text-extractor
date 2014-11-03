@@ -151,9 +151,7 @@ public class PdfBox extends ParserAbstract {
 			ParserDocument document = getNewParserDocument();
 			extractMetaData(document, pdf);
 			document.add(CHARACTER_COUNT, extractTextContent(document, pdf));
-			String lang = languageDetection(CONTENT, 10000);
-			System.out.println("LANG: " + lang);
-			document.add(LANG_DETECTION, lang);
+			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 		} catch (BadSecurityHandlerException e) {
 			throw new IOException(e);
 		} catch (CryptographyException e) {
