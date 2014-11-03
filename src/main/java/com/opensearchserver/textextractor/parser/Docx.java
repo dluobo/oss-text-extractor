@@ -35,6 +35,12 @@ public class Docx extends ParserAbstract {
 	final protected static ParserField CREATOR = ParserField.newString(
 			"creator", "The name of the creator");
 
+	final protected static ParserField CREATION_DATE = ParserField.newDate(
+			"creation_date", null);
+
+	final protected static ParserField MODIFICATION_DATE = ParserField.newDate(
+			"modification_date", null);
+
 	final protected static ParserField DESCRIPTION = ParserField.newString(
 			"description", null);
 
@@ -51,7 +57,8 @@ public class Docx extends ParserAbstract {
 			"lang_detection", "Detection of the language");
 
 	final protected static ParserField[] FIELDS = { TITLE, CREATOR,
-			DESCRIPTION, KEYWORDS, SUBJECT, CONTENT, LANG_DETECTION };
+			CREATION_DATE, MODIFICATION_DATE, DESCRIPTION, KEYWORDS, SUBJECT,
+			CONTENT, LANG_DETECTION };
 
 	public Docx() {
 	}
@@ -78,6 +85,8 @@ public class Docx extends ParserAbstract {
 			if (info != null) {
 				metas.add(TITLE, info.getTitle());
 				metas.add(CREATOR, info.getCreator());
+				metas.add(CREATION_DATE, info.getCreated());
+				metas.add(MODIFICATION_DATE, info.getModified());
 				metas.add(SUBJECT, info.getSubject());
 				metas.add(DESCRIPTION, info.getDescription());
 				metas.add(KEYWORDS, info.getKeywords());

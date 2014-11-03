@@ -67,6 +67,12 @@ public class Pptx extends ParserAbstract {
 	final protected static ParserField SUBJECT = ParserField.newString(
 			"subject", "The subject of the document");
 
+	final protected static ParserField CREATION_DATE = ParserField.newDate(
+			"creation_date", null);
+
+	final protected static ParserField MODIFICATION_DATE = ParserField.newDate(
+			"modification_date", null);
+
 	final protected static ParserField SLIDES = ParserField.newString("slides",
 			null);
 
@@ -83,8 +89,8 @@ public class Pptx extends ParserAbstract {
 			"lang_detection", "Detection of the language");
 
 	final protected static ParserField[] FIELDS = { TITLE, CREATOR,
-			DESCRIPTION, KEYWORDS, SUBJECT, SLIDES, MASTER, NOTES, COMMENTS,
-			LANG_DETECTION };
+			DESCRIPTION, KEYWORDS, SUBJECT, CREATION_DATE, MODIFICATION_DATE,
+			SLIDES, MASTER, NOTES, COMMENTS, LANG_DETECTION };
 
 	public Pptx() {
 	}
@@ -133,6 +139,8 @@ public class Pptx extends ParserAbstract {
 				metas.add(SUBJECT, info.getSubject());
 				metas.add(DESCRIPTION, info.getDescription());
 				metas.add(KEYWORDS, info.getKeywords());
+				metas.add(CREATION_DATE, info.getCreated());
+				metas.add(MODIFICATION_DATE, info.getModified());
 			}
 		} finally {
 			poiExtractor.close();

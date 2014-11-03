@@ -72,6 +72,7 @@ public class Ppt extends ParserAbstract {
 	protected void parseContent(InputStream inputStream) throws Exception {
 
 		SlideShow ppt = new SlideShow(inputStream);
+
 		Slide[] slides = ppt.getSlides();
 		for (Slide slide : slides) {
 			ParserDocument document = getNewParserDocument();
