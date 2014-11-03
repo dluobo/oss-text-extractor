@@ -29,11 +29,13 @@ import org.apache.commons.io.IOUtils;
 
 public abstract class ParserAbstract {
 
+	protected final ParserDocument metas;
 	private final List<ParserDocument> documents;
 	protected MultivaluedMap<String, String> parameters;
 
 	protected ParserAbstract() {
 		documents = new ArrayList<ParserDocument>(0);
+		metas = new ParserDocument();
 		parameters = null;
 	}
 
@@ -90,7 +92,7 @@ public abstract class ParserAbstract {
 		setUriParameters(uriInfo);
 		ParserResult result = new ParserResult();
 		parseContent(inputStream);
-		result.done(documents);
+		result.done(metas, documents);
 		return result;
 	}
 
@@ -98,7 +100,7 @@ public abstract class ParserAbstract {
 		setUriParameters(uriInfo);
 		ParserResult result = new ParserResult();
 		parseContent(file);
-		result.done(documents);
+		result.done(metas, documents);
 		return result;
 	}
 
@@ -113,7 +115,8 @@ public abstract class ParserAbstract {
 	}
 
 	/**
-	 * Submit the content if of a field to language detection
+	 * Submit the content of a field to language detection. It checks all the
+	 * document.
 	 * 
 	 * @param source
 	 *            The field to submit
@@ -125,6 +128,8 @@ public abstract class ParserAbstract {
 		StringBuilder sb = new StringBuilder();
 		for (ParserDocument document : documents) {
 			List<Object> objectList = document.fields.get(source.name);
+			if (objectList == null)
+				continue;
 			for (Object object : objectList) {
 				if (object == null)
 					continue;
@@ -133,6 +138,31 @@ public abstract class ParserAbstract {
 				if (sb.length() > maxLength)
 					Language.quietDetect(sb.toString(), maxLength);
 			}
+		}
+		return Language.quietDetect(sb.toString(), maxLength);
+	}
+
+	/**
+	 * Submit the content if of a field to language detection.
+	 * 
+	 * @param document
+	 * @param source
+	 * @param maxLength
+	 * @return
+	 */
+	protected final String languageDetection(ParserDocument document,
+			ParserField source, int maxLength) {
+		StringBuilder sb = new StringBuilder();
+		List<Object> objectList = document.fields.get(source.name);
+		if (objectList == null)
+			return null;
+		for (Object object : objectList) {
+			if (object == null)
+				continue;
+			sb.append(object.toString());
+			sb.append(' ');
+			if (sb.length() > maxLength)
+				Language.quietDetect(sb.toString(), maxLength);
 		}
 		return Language.quietDetect(sb.toString(), maxLength);
 	}

@@ -26,6 +26,8 @@ import com.opensearchserver.textextractor.parser.Doc;
 import com.opensearchserver.textextractor.parser.Docx;
 import com.opensearchserver.textextractor.parser.Odf;
 import com.opensearchserver.textextractor.parser.PdfBox;
+import com.opensearchserver.textextractor.parser.Ppt;
+import com.opensearchserver.textextractor.parser.Pptx;
 import com.opensearchserver.textextractor.parser.Rtf;
 import com.opensearchserver.textextractor.parser.Text;
 
@@ -42,6 +44,8 @@ public class ParserList {
 		register(Docx.class);
 		register(Odf.class);
 		register(PdfBox.class);
+		register(Ppt.class);
+		register(Pptx.class);
 		register(Rtf.class);
 		register(Text.class);
 	}

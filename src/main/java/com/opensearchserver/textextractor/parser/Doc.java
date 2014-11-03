@@ -61,8 +61,8 @@ public class Doc extends ParserAbstract {
 		return FIELDS;
 	}
 
-	private void currentWordExtraction(ParserDocument document,
-			InputStream inputStream) throws IOException {
+	private void currentWordExtraction(InputStream inputStream)
+			throws IOException {
 		WordExtractor word = null;
 
 		try {
@@ -70,35 +70,38 @@ public class Doc extends ParserAbstract {
 
 			SummaryInformation info = word.getSummaryInformation();
 			if (info != null) {
-				document.add(TITLE, info.getTitle());
-				document.add(AUTHOR, info.getAuthor());
-				document.add(SUBJECT, info.getSubject());
+				metas.add(TITLE, info.getTitle());
+				metas.add(AUTHOR, info.getAuthor());
+				metas.add(SUBJECT, info.getSubject());
 			}
 
+			ParserDocument document = getNewParserDocument();
 			String[] paragraphes = word.getParagraphText();
 			for (String paragraph : paragraphes)
 				document.add(CONTENT, paragraph);
+			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 		} finally {
 			IOUtils.closeQuietly(word);
 		}
 	}
 
-	private void oldWordExtraction(ParserDocument document,
-			InputStream inputStream) throws IOException {
+	private void oldWordExtraction(InputStream inputStream) throws IOException {
 		Word6Extractor word6 = null;
 		try {
 			word6 = new Word6Extractor(inputStream);
 			SummaryInformation si = word6.getSummaryInformation();
 			if (si != null) {
-				document.add(TITLE, si.getTitle());
-				document.add(AUTHOR, si.getAuthor());
-				document.add(SUBJECT, si.getSubject());
+				metas.add(TITLE, si.getTitle());
+				metas.add(AUTHOR, si.getAuthor());
+				metas.add(SUBJECT, si.getSubject());
 			}
 
+			ParserDocument document = getNewParserDocument();
 			@SuppressWarnings("deprecation")
 			String[] paragraphes = word6.getParagraphText();
 			for (String paragraph : paragraphes)
 				document.add(CONTENT, paragraph);
+			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 		} finally {
 			IOUtils.closeQuietly(word6);
 		}
@@ -106,12 +109,10 @@ public class Doc extends ParserAbstract {
 
 	@Override
 	public void parseContent(InputStream inputStream) throws IOException {
-		ParserDocument document = getNewParserDocument();
 		try {
-			currentWordExtraction(document, inputStream);
-			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
+			currentWordExtraction(inputStream);
 		} catch (OldWordFileFormatException e) {
-			oldWordExtraction(document, inputStream);
+			oldWordExtraction(inputStream);
 		}
 	}
 

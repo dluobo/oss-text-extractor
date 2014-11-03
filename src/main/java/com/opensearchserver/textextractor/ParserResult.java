@@ -15,6 +15,8 @@
  */
 package com.opensearchserver.textextractor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,15 +27,29 @@ public class ParserResult {
 
 	public long time_elapsed;
 
-	public List<ParserDocument> documents;
+	public HashMap<String, List<Object>> metas;
+
+	public List<HashMap<String, List<Object>>> documents;
 
 	ParserResult() {
 		time_elapsed = System.currentTimeMillis();
 		documents = null;
+		metas = null;
 	}
 
-	void done(List<ParserDocument> documents) {
+	void done(ParserDocument parserMetas, List<ParserDocument> parserDocuments) {
+		// Calculate the time elapsed
 		time_elapsed = System.currentTimeMillis() - time_elapsed;
-		this.documents = documents;
+
+		// Extract the metas
+		metas = parserMetas == null ? null : parserMetas.fields;
+
+		// Extract the documents found
+		if (parserDocuments != null) {
+			documents = new ArrayList<HashMap<String, List<Object>>>(
+					parserDocuments.size());
+			for (ParserDocument parserDocument : parserDocuments)
+				documents.add(parserDocument.fields);
+		}
 	}
 }
