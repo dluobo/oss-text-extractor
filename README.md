@@ -4,13 +4,13 @@ OSSTextExtractor
 An RESTFul Web Service for text extraction and analysis.
 OSSTextExtractor support various binary formats.
 
-- office documents (doc, docx, xls, xlsx, ppt, pptx, pub, vsd, odf, odt, odp)
-- pdf,
-- rtf,
-- rss,
-- html,
-- audio files, torrent,
-- images.
+- Word processor (doc, docx, odt, rtf)
+- Spreadsheet (xls, xlsx, ods)
+- Presentation (ppt, pptx, odp)
+- Publishing (pdf, pub)
+- Web (rss, html/xhtml)
+- Medias (audio, images)
+- Others (vsd, text)
 
 ## How to build
 
@@ -106,26 +106,19 @@ If the file is already available in the server, the follow API is available:
 curl -XGET http://localhost:9091/pdfbox?path=/home/manu/tutorial.pdf
 ```
 
-The parser extracts the text information using the following JSON format:
+The parser extracts the metas and text information using the following JSON format:
 
 ```json
 {
-	"time_elapsed":1772,
-	"documents":
-		[
-			{
-				"fields":
-					{
-						"content":
-							[
-								"Table of contents Requirements Getting Started Deleting Querying Data Sorting Text  Analysis Debugging"
-							],
-						"character_count":[13634],
-						"number_of_pages":[7],
-						"producer":["FOP 0.20.5"]
-					}
-			}
-		]
+	"time_elapsed": 2735,
+	"metas": {
+		"number_of_pages": [7],
+		"producer": ["FOP 0.20.5"]
+	},
+	"documents": [ {
+		"content": ["Table of contents Requirements Getting Started Deleting Querying Data Sorting Text  Analysis Debugging"],
+		"character_count":[13634]
+	} ]
 }
 ```
 
@@ -150,6 +143,9 @@ Have a look at the [Rtf](https://github.com/opensearchserver/oss_text_extractor/
 		Document doc = rtf.createDefaultDocument();
 		rtf.read(inputStream, doc, 0);
 
+		// Fill the metas
+		metas.add(TITLE, "title of the document");
+		
 		// Obtain a new parser document.
 		ParserDocument result = getNewParserDocument();
 
