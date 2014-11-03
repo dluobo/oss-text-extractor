@@ -134,51 +134,31 @@ The parser extracts the text information using the following JSON format:
 Writing a parser is easy. Just extends the abstract class [ParserAbstract](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/ParserAbstract.java) and implements the required methods.
 
 ```java
-protected void parseContent(InputStream inputStream) throws IOException;
+protected void parseContent(InputStream inputStream) throws Exception;
 ```
 
 The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...). A Parser Document is a list of name/value pair.
 
-Have a look at the [Docx](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/Docx.java) class to see a simple example.
+Have a look at the [Rtf](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/rtf.java) class to see a simple example.
 
 ```java
 	@Override
-	protected void parseContent(InputStream inputStream) throws IOException {
-		
+	protected void parseContent(InputStream inputStream) throws Exception {
+
+		// Extract the text data
+		RTFEditorKit rtf = new RTFEditorKit();
+		Document doc = rtf.createDefaultDocument();
+		rtf.read(inputStream, doc, 0);
+
 		// Obtain a new parser document.
-		
-		ParserDocument parserDocument = getNewParserDocument();
+		ParserDocument result = getNewParserDocument();
 
-		// Open the document using the inputStream
-		
-		XWPFDocument document = new XWPFDocument(inputStream);
-		XWPFWordExtractor word = null;
-		try {
-			word = new XWPFWordExtractor(document);
+		// Fill the field of the ParserDocument
+		result.add(CONTENT, doc.getText(0, doc.getLength()));
 
-			// Extract the meta data
-			
-			CoreProperties info = word.getCoreProperties();
-			
-			if (info != null) {
-			
-				// Fill the ParserDocument
-				
-				parserDocument.add(TITLE, info.getTitle());
-				parserDocument.add(CREATOR, info.getCreator());
-				parserDocument.add(SUBJECT, info.getSubject());
-				parserDocument.add(DESCRIPTION, info.getDescription());
-				parserDocument.add(KEYWORDS, info.getKeywords());
-			}
-			
-			parserDocument.add(CONTENT, word.getText());
+		// Apply the language detection
+		result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 
-		} finally {
-		
-			// Free the resource
-			
-			IOUtils.closeQuietly(word);
-		}
 	}
 ```
 

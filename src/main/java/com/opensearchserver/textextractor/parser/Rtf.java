@@ -15,10 +15,8 @@
  */
 package com.opensearchserver.textextractor.parser;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
@@ -50,17 +48,22 @@ public class Rtf extends ParserAbstract {
 	}
 
 	@Override
-	protected void parseContent(InputStream inputStream) throws IOException {
+	protected void parseContent(InputStream inputStream) throws Exception {
+
+		// Extract the text data
 		RTFEditorKit rtf = new RTFEditorKit();
 		Document doc = rtf.createDefaultDocument();
-		try {
-			ParserDocument result = getNewParserDocument();
-			rtf.read(inputStream, doc, 0);
-			result.add(CONTENT, doc.getText(0, doc.getLength()));
-			result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
-		} catch (BadLocationException e) {
-			throw new IOException(e);
-		}
+		rtf.read(inputStream, doc, 0);
+
+		// Obtain a new parser document.
+		ParserDocument result = getNewParserDocument();
+
+		// Fill the field of the ParserDocument
+		result.add(CONTENT, doc.getText(0, doc.getLength()));
+
+		// Apply the language detection
+		result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
+
 	}
 
 }
