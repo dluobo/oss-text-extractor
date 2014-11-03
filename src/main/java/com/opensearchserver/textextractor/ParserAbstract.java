@@ -58,13 +58,15 @@ public abstract class ParserAbstract {
 	protected abstract ParserField[] getFields();
 
 	/**
-	 * Read a document and fill the ParserDocument list.
+	 * @throws Exception
+	 *             Read a document and fill the ParserDocument list.
 	 * 
 	 * @param inputStream
 	 * @throws IOException
+	 * @throws
 	 */
 	protected abstract void parseContent(InputStream inputStream)
-			throws IOException;
+			throws Exception;
 
 	/**
 	 * Read a document and fill the ParserDocument list.
@@ -72,7 +74,7 @@ public abstract class ParserAbstract {
 	 * @param file
 	 * @throws IOException
 	 */
-	protected void parseContent(File file) throws IOException {
+	protected void parseContent(File file) throws Exception {
 		InputStream is = null;
 		try {
 			is = new FileInputStream(file);
@@ -84,7 +86,7 @@ public abstract class ParserAbstract {
 	}
 
 	final ParserResult doParsing(UriInfo uriInfo, InputStream inputStream)
-			throws IOException {
+			throws Exception {
 		setUriParameters(uriInfo);
 		ParserResult result = new ParserResult();
 		parseContent(inputStream);
@@ -92,7 +94,7 @@ public abstract class ParserAbstract {
 		return result;
 	}
 
-	final ParserResult doParsing(UriInfo uriInfo, File file) throws IOException {
+	final ParserResult doParsing(UriInfo uriInfo, File file) throws Exception {
 		setUriParameters(uriInfo);
 		ParserResult result = new ParserResult();
 		parseContent(file);
