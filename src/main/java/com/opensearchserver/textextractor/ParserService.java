@@ -28,7 +28,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -64,17 +63,6 @@ public class ParserService {
 		}
 	}
 
-	private void setParameters(@Context UriInfo uriInfo, ParserAbstract parser) {
-		MultivaluedMap<String, String> parserParams = uriInfo
-				.getQueryParameters();
-		for (String propKey : parserParams.keySet()) {
-			if (!propKey.startsWith("p."))
-				continue;
-			parser.setParameter(propKey.substring(2),
-					parserParams.getFirst(propKey));
-		}
-	}
-
 	@GET
 	@Path("/{name}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -84,14 +72,11 @@ public class ParserService {
 		ParserAbstract parser = getParser(parserName);
 		if (path == null)
 			return new ParserDefinition(parser);
-		setParameters(uriInfo, parser);
 		File file = new File(path);
 		if (!file.exists())
 			throwError(Status.NOT_FOUND, "File not found: " + path);
 		try {
-			ParserResult result = new ParserResult();
-			parser.parseContent(file);
-			return result.done(parser);
+			return parser.doParsing(uriInfo, file);
 		} catch (Exception e) {
 			throwError(e);
 			return null;
@@ -104,11 +89,8 @@ public class ParserService {
 	public ParserResult put(@Context UriInfo uriInfo,
 			@PathParam("name") String parserName, InputStream inputStream) {
 		ParserAbstract parser = getParser(parserName);
-		setParameters(uriInfo, parser);
 		try {
-			ParserResult result = new ParserResult();
-			parser.parseContent(inputStream);
-			return result.done(parser);
+			return parser.doParsing(uriInfo, inputStream);
 		} catch (Exception e) {
 			throwError(e);
 			return null;

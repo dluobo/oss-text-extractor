@@ -22,24 +22,25 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.io.IOUtils;
 
 public abstract class ParserAbstract {
 
 	private final List<ParserDocument> documents;
+	protected MultivaluedMap<String, String> parameters;
 
 	protected ParserAbstract() {
 		documents = new ArrayList<ParserDocument>(0);
+		parameters = null;
 	}
 
 	protected ParserDocument getNewParserDocument() {
 		ParserDocument document = new ParserDocument();
 		documents.add(document);
 		return document;
-	}
-
-	public List<ParserDocument> getDocuments() {
-		return documents;
 	}
 
 	/**
@@ -57,7 +58,7 @@ public abstract class ParserAbstract {
 	protected abstract ParserField[] getFields();
 
 	/**
-	 * Read a document a populate the ParserDocument list.
+	 * Read a document and fill the ParserDocument list.
 	 * 
 	 * @param inputStream
 	 * @throws IOException
@@ -65,6 +66,12 @@ public abstract class ParserAbstract {
 	protected abstract void parseContent(InputStream inputStream)
 			throws IOException;
 
+	/**
+	 * Read a document and fill the ParserDocument list.
+	 * 
+	 * @param file
+	 * @throws IOException
+	 */
 	protected void parseContent(File file) throws IOException {
 		InputStream is = null;
 		try {
@@ -76,8 +83,56 @@ public abstract class ParserAbstract {
 		}
 	}
 
-	// TODO implement
-	public void setParameter(String parameter, String value) {
+	final ParserResult doParsing(UriInfo uriInfo, InputStream inputStream)
+			throws IOException {
+		setUriParameters(uriInfo);
+		ParserResult result = new ParserResult();
+		parseContent(inputStream);
+		result.done(documents);
+		return result;
+	}
+
+	final ParserResult doParsing(UriInfo uriInfo, File file) throws IOException {
+		setUriParameters(uriInfo);
+		ParserResult result = new ParserResult();
+		parseContent(file);
+		result.done(documents);
+		return result;
+	}
+
+	final private void setUriParameters(UriInfo uriInfo) {
+		parameters = uriInfo == null ? null : uriInfo.getQueryParameters();
+	}
+
+	final List<String> getParameters(ParserField parserField) {
+		if (parameters == null)
+			return null;
+		return parameters.get(parserField.name);
+	}
+
+	/**
+	 * Submit the content if of a field to language detection
+	 * 
+	 * @param source
+	 *            The field to submit
+	 * @param maxLength
+	 *            The maximum number of characters
+	 * @return
+	 */
+	protected final String languageDetection(ParserField source, int maxLength) {
+		StringBuilder sb = new StringBuilder();
+		for (ParserDocument document : documents) {
+			List<Object> objectList = document.fields.get(source.name);
+			for (Object object : objectList) {
+				if (object == null)
+					continue;
+				sb.append(object.toString());
+				sb.append(' ');
+				if (sb.length() > maxLength)
+					Language.quietDetect(sb.toString(), maxLength);
+			}
+		}
+		return Language.quietDetect(sb.toString(), maxLength);
 	}
 
 }

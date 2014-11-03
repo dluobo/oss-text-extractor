@@ -70,9 +70,12 @@ public class PdfBox extends ParserAbstract {
 	final protected static ParserField CHARACTER_COUNT = ParserField
 			.newInteger("character_count", null);
 
+	final protected static ParserField LANG_DETECTION = ParserField.newString(
+			"lang_detection", "Detection of the language");
+
 	final protected static ParserField[] FIELDS = { TITLE, AUTHOR, SUBJECT,
 			CONTENT, PRODUCER, KEYWORDS, CREATION_DATE, MODIFICATION_DATE,
-			LANGUAGE, NUMBER_OF_PAGES };
+			LANGUAGE, NUMBER_OF_PAGES, LANG_DETECTION };
 
 	static {
 		ParserList.register(PdfBox.class);
@@ -148,6 +151,9 @@ public class PdfBox extends ParserAbstract {
 			ParserDocument document = getNewParserDocument();
 			extractMetaData(document, pdf);
 			document.add(CHARACTER_COUNT, extractTextContent(document, pdf));
+			String lang = languageDetection(CONTENT, 10000);
+			System.out.println("LANG: " + lang);
+			document.add(LANG_DETECTION, lang);
 		} catch (BadSecurityHandlerException e) {
 			throw new IOException(e);
 		} catch (CryptographyException e) {
