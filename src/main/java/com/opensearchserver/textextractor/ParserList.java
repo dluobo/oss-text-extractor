@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.opensearchserver.textextractor.parser.Doc;
 import com.opensearchserver.textextractor.parser.Docx;
 import com.opensearchserver.textextractor.parser.PdfBox;
+import com.opensearchserver.textextractor.parser.Rtf;
 
 public class ParserList {
 
@@ -38,6 +39,7 @@ public class ParserList {
 		register(Doc.class);
 		register(Docx.class);
 		register(PdfBox.class);
+		register(Rtf.class);
 	}
 
 	public final static void register(

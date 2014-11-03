@@ -23,13 +23,17 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_EMPTY)
 public class ParserResult {
 
-	public long time_elapsed = System.currentTimeMillis();
+	public long time_elapsed;
 
-	public List<ParserDocument> documents = null;
+	public List<ParserDocument> documents;
 
-	ParserResult done(ParserAbstract parser) {
+	ParserResult() {
+		time_elapsed = System.currentTimeMillis();
+		documents = null;
+	}
+
+	void done(List<ParserDocument> documents) {
 		time_elapsed = System.currentTimeMillis() - time_elapsed;
-		documents = parser.getDocuments();
-		return this;
+		this.documents = documents;
 	}
 }

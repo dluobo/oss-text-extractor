@@ -42,8 +42,11 @@ public class Doc extends ParserAbstract {
 	final protected static ParserField CONTENT = ParserField.newString(
 			"content", "The content of the document");
 
+	final protected static ParserField LANG_DETECTION = ParserField.newString(
+			"lang_detection", "Detection of the language");
+
 	final protected static ParserField[] FIELDS = { TITLE, AUTHOR, SUBJECT,
-			CONTENT };
+			CONTENT, LANG_DETECTION };
 
 	public Doc() {
 	}
@@ -106,6 +109,7 @@ public class Doc extends ParserAbstract {
 		ParserDocument document = getNewParserDocument();
 		try {
 			currentWordExtraction(document, inputStream);
+			document.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 		} catch (OldWordFileFormatException e) {
 			oldWordExtraction(document, inputStream);
 		}
