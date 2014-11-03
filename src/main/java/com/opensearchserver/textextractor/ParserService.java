@@ -27,7 +27,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -35,8 +34,10 @@ import javax.ws.rs.core.UriInfo;
 @Path("/")
 public class ParserService {
 
+	public final static String APPLICATION_JSON_UTF8 = "application/json;charset=UTF-8";
+
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(APPLICATION_JSON_UTF8)
 	public Set<String> list() {
 		return ParserList.getList();
 	}
@@ -65,7 +66,7 @@ public class ParserService {
 
 	@GET
 	@Path("/{name}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(APPLICATION_JSON_UTF8)
 	public Object get(@Context UriInfo uriInfo,
 			@PathParam("name") String parserName,
 			@QueryParam("path") String path) {
@@ -85,7 +86,7 @@ public class ParserService {
 
 	@PUT
 	@Path("/{name}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(APPLICATION_JSON_UTF8)
 	public ParserResult put(@Context UriInfo uriInfo,
 			@PathParam("name") String parserName, InputStream inputStream) {
 		ParserAbstract parser = getParser(parserName);
