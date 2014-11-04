@@ -31,7 +31,7 @@ import com.opensearchserver.textextractor.ParserField;
 public class Doc extends ParserAbstract {
 
 	final protected static ParserField TITLE = ParserField.newString("title",
-			null);
+			"The title of the document");
 
 	final protected static ParserField AUTHOR = ParserField.newString("author",
 			"The name of the author");

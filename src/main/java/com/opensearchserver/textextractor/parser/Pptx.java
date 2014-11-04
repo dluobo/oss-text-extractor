@@ -25,10 +25,8 @@
 package com.opensearchserver.textextractor.parser;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.xslf.XSLFSlideShow;
 import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
@@ -107,17 +105,10 @@ public class Pptx extends ParserAbstract {
 
 	@Override
 	protected void parseContent(InputStream inputStream) throws Exception {
-		File tempFile = File.createTempFile("oss_text_extractor", ".pptx");
-		FileOutputStream fos = null;
+		File tempFile = ParserAbstract.createTempFile(inputStream, "pptx");
 		try {
-			fos = new FileOutputStream(tempFile);
-			IOUtils.copy(inputStream, fos);
-			fos.close();
-			fos = null;
 			parseContent(tempFile);
 		} finally {
-			if (fos != null)
-				IOUtils.closeQuietly(fos);
 			tempFile.delete();
 		}
 	}

@@ -17,6 +17,7 @@ package com.opensearchserver.textextractor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -84,6 +85,22 @@ public abstract class ParserAbstract {
 		} finally {
 			if (is != null)
 				IOUtils.closeQuietly(is);
+		}
+	}
+
+	protected final static File createTempFile(InputStream inputStream,
+			String extension) throws IOException {
+		File tempFile = File.createTempFile("oss_text_extractor", extension);
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(tempFile);
+			IOUtils.copy(inputStream, fos);
+			fos.close();
+			fos = null;
+			return tempFile;
+		} finally {
+			if (fos != null)
+				IOUtils.closeQuietly(fos);
 		}
 	}
 
