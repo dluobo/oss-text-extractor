@@ -42,6 +42,7 @@ public class Main extends Application {
 	@Override
 	public Set<Class<?>> getClasses() {
 		HashSet<Class<?>> classes = new HashSet<Class<?>>();
+		classes.add(JacksonConfig.class);
 		classes.add(JacksonJsonProvider.class);
 		classes.add(ParserService.class);
 		return classes;
