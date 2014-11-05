@@ -15,40 +15,27 @@
  */
 package com.opensearchserver.textextractor;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opensearchserver.textextractor.Link.Method;
 
 @JsonInclude(Include.NON_EMPTY)
-public class ParserDefinition {
+public class ResourceLink {
 
-	@JsonProperty("_link1")
-	public final Link getParse;
+	@JsonProperty("_link")
+	public final Link get;
 
-	@JsonProperty("_link2")
-	public final Link put;
-
-	public final ParserField[] returnedFields;
-
-	public ParserDefinition() {
-		getParse = null;
-		put = null;
-		returnedFields = null;
+	public ResourceLink(String resourcePath) {
+		get = new Link(Method.GET, "describe", resourcePath);
 	}
 
-	public ParserDefinition(String resourcePath, ParserAbstract parser) {
-		ParserField[] parameters = parser.getParameters();
-		ParserField[] getParserFields = new ParserField[parameters == null ? 1
-				: 1 + parameters.length];
-		getParserFields[0] = ParserField.newString("path",
-				"path to the local file");
-		if (parameters != null)
-			System.arraycopy(parameters, 0, getParserFields, 1,
-					parameters.length);
-		getParse = new Link(Method.GET, "parse local file", resourcePath,
-				getParserFields);
-		put = new Link(Method.PUT, "upload", resourcePath, parameters);
-		returnedFields = parser.getFields();
+	public static String join(String... path) {
+		String join = StringUtils.join(path, '/');
+		path = StringUtils.split(join, '/');
+		return StringUtils.join(path, '/');
 	}
+
 }

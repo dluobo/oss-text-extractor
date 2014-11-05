@@ -20,6 +20,8 @@ import io.undertow.Undertow;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -40,12 +42,14 @@ public class Main extends Application {
 	@Override
 	public Set<Class<?>> getClasses() {
 		HashSet<Class<?>> classes = new HashSet<Class<?>>();
+		classes.add(JacksonConfig.class);
 		classes.add(JacksonJsonProvider.class);
 		classes.add(ParserService.class);
 		return classes;
 	}
 
 	public static void main(String[] args) throws IOException, ParseException {
+		Logger.getLogger("").setLevel(Level.WARNING);
 		Options options = new Options();
 		options.addOption("help", false, "print this message");
 		options.addOption("port", true, "TCP port");

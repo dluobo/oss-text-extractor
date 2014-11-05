@@ -17,6 +17,8 @@ package com.opensearchserver.textextractor;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +45,15 @@ public class ParserService {
 
 	@GET
 	@Produces(APPLICATION_JSON_UTF8)
-	public Set<String> list() {
-		return ParserList.getList();
+	public Map<String, ResourceLink> list(@Context UriInfo uriInfo) {
+		Set<String> parserList = ParserList.getList();
+		Map<String, ResourceLink> map = new LinkedHashMap<String, ResourceLink>(
+				parserList.size());
+		for (String parserName : parserList)
+			map.put(parserName,
+					new ResourceLink(ResourceLink.join(uriInfo.getPath(),
+							parserName)));
+		return map;
 	}
 
 	private void throwError(Status status, String msg) {
@@ -57,14 +66,15 @@ public class ParserService {
 		throwError(Status.INTERNAL_SERVER_ERROR, e.getMessage());
 	}
 
-	private ParserAbstract getParser(String parserName) {
+	private ParserAbstract getParser(UriInfo uriInfo, String parserName) {
 		Class<? extends ParserAbstract> parserClass = ParserList
 				.findParserClass(parserName);
 		if (parserClass == null)
 			throwError(Status.NOT_FOUND, "Unknown parser: " + parserName);
 		try {
 			return parserClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | SecurityException e) {
 			throwError(e);
 			return null;
 		}
@@ -76,9 +86,9 @@ public class ParserService {
 	public Object get(@Context UriInfo uriInfo,
 			@PathParam("name") String parserName,
 			@QueryParam("path") String path) {
-		ParserAbstract parser = getParser(parserName);
+		ParserAbstract parser = getParser(uriInfo, parserName);
 		if (path == null)
-			return new ParserDefinition(parser);
+			return new ParserDefinition(uriInfo.getPath(), parser);
 		File file = new File(path);
 		if (!file.exists())
 			throwError(Status.NOT_FOUND, "File not found: " + path);
@@ -95,7 +105,7 @@ public class ParserService {
 	@Produces(APPLICATION_JSON_UTF8)
 	public ParserResult put(@Context UriInfo uriInfo,
 			@PathParam("name") String parserName, InputStream inputStream) {
-		ParserAbstract parser = getParser(parserName);
+		ParserAbstract parser = getParser(uriInfo, parserName);
 		try {
 			return parser.doParsing(uriInfo, inputStream);
 		} catch (Exception e) {

@@ -32,6 +32,7 @@ import com.opensearchserver.textextractor.parser.Ppt;
 import com.opensearchserver.textextractor.parser.Pptx;
 import com.opensearchserver.textextractor.parser.Rtf;
 import com.opensearchserver.textextractor.parser.Text;
+import com.opensearchserver.textextractor.parser.Visio;
 import com.opensearchserver.textextractor.parser.Xls;
 import com.opensearchserver.textextractor.parser.Xlsx;
 
@@ -54,6 +55,7 @@ public class ParserList {
 		register(Pptx.class);
 		register(Rtf.class);
 		register(Text.class);
+		register(Visio.class);
 		register(Xls.class);
 		register(Xlsx.class);
 	}

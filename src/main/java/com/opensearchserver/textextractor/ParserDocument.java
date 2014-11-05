@@ -28,7 +28,7 @@ public class ParserDocument {
 	}
 
 	private List<Object> getList(ParserField field, Object value) {
-		if (value == null)
+		if (value == null || field == null)
 			return null;
 		List<Object> values = fields.get(field.name);
 		if (values == null) {
