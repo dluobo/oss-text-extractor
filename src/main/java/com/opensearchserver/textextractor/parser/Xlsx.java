@@ -15,19 +15,19 @@
  */
 package com.opensearchserver.textextractor.parser;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.POIXMLProperties.CoreProperties;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xssf.extractor.XSSFExcelExtractor;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.opensearchserver.textextractor.ParserAbstract;
 import com.opensearchserver.textextractor.ParserDocument;
 import com.opensearchserver.textextractor.ParserField;
 
-public class Docx extends ParserAbstract {
+public class Xlsx extends ParserAbstract {
 
 	final protected static ParserField TITLE = ParserField.newString("title",
 			"The title of the document");
@@ -60,7 +60,7 @@ public class Docx extends ParserAbstract {
 			CREATION_DATE, MODIFICATION_DATE, DESCRIPTION, KEYWORDS, SUBJECT,
 			CONTENT, LANG_DETECTION };
 
-	public Docx() {
+	public Xlsx() {
 	}
 
 	@Override
@@ -73,15 +73,13 @@ public class Docx extends ParserAbstract {
 		return FIELDS;
 	}
 
-	@Override
-	protected void parseContent(InputStream inputStream) throws IOException {
+	private void parseContent(XSSFWorkbook workbook) throws Exception {
 
-		XWPFDocument document = new XWPFDocument(inputStream);
-		XWPFWordExtractor word = null;
+		XSSFExcelExtractor excelExtractor = null;
 		try {
-			word = new XWPFWordExtractor(document);
+			excelExtractor = new XSSFExcelExtractor(workbook);
 
-			CoreProperties info = word.getCoreProperties();
+			CoreProperties info = excelExtractor.getCoreProperties();
 			if (info != null) {
 				metas.add(TITLE, info.getTitle());
 				metas.add(CREATOR, info.getCreator());
@@ -91,12 +89,28 @@ public class Docx extends ParserAbstract {
 				metas.add(DESCRIPTION, info.getDescription());
 				metas.add(KEYWORDS, info.getKeywords());
 			}
-			ParserDocument parserDocument = getNewParserDocument();
-			parserDocument.add(CONTENT, word.getText());
-			parserDocument.add(LANG_DETECTION,
-					languageDetection(CONTENT, 10000));
+
+			ParserDocument result = getNewParserDocument();
+			excelExtractor.setIncludeCellComments(true);
+			excelExtractor.setIncludeHeadersFooters(true);
+			excelExtractor.setIncludeSheetNames(true);
+			result.add(CONTENT, excelExtractor.getText());
+			result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
+
 		} finally {
-			IOUtils.closeQuietly(word);
+			if (excelExtractor != null)
+				IOUtils.closeQuietly(excelExtractor);
 		}
+
+	}
+
+	@Override
+	protected void parseContent(InputStream inputStream) throws Exception {
+		parseContent(new XSSFWorkbook(inputStream));
+	}
+
+	@Override
+	protected void parseContent(File file) throws Exception {
+		parseContent(new XSSFWorkbook(file));
 	}
 }

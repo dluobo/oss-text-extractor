@@ -31,13 +31,22 @@ import com.opensearchserver.textextractor.ParserField;
 public class Doc extends ParserAbstract {
 
 	final protected static ParserField TITLE = ParserField.newString("title",
-			null);
+			"The title of the document");
 
 	final protected static ParserField AUTHOR = ParserField.newString("author",
 			"The name of the author");
 
+	final protected static ParserField CREATION_DATE = ParserField.newDate(
+			"creation_date", null);
+
+	final protected static ParserField MODIFICATION_DATE = ParserField.newDate(
+			"modification_date", null);
+
 	final protected static ParserField SUBJECT = ParserField.newString(
 			"subject", "The subject of the document");
+
+	final protected static ParserField KEYWORDS = ParserField.newString(
+			"keywords", null);
 
 	final protected static ParserField CONTENT = ParserField.newString(
 			"content", "The content of the document");
@@ -45,8 +54,9 @@ public class Doc extends ParserAbstract {
 	final protected static ParserField LANG_DETECTION = ParserField.newString(
 			"lang_detection", "Detection of the language");
 
-	final protected static ParserField[] FIELDS = { TITLE, AUTHOR, SUBJECT,
-			CONTENT, LANG_DETECTION };
+	final protected static ParserField[] FIELDS = { TITLE, AUTHOR,
+			CREATION_DATE, MODIFICATION_DATE, SUBJECT, KEYWORDS, CONTENT,
+			LANG_DETECTION };
 
 	public Doc() {
 	}
@@ -73,6 +83,9 @@ public class Doc extends ParserAbstract {
 				metas.add(TITLE, info.getTitle());
 				metas.add(AUTHOR, info.getAuthor());
 				metas.add(SUBJECT, info.getSubject());
+				metas.add(CREATION_DATE, info.getCreateDateTime());
+				metas.add(MODIFICATION_DATE, info.getLastSaveDateTime());
+				metas.add(KEYWORDS, info.getKeywords());
 			}
 
 			ParserDocument document = getNewParserDocument();

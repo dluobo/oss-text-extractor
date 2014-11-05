@@ -25,10 +25,8 @@
 package com.opensearchserver.textextractor.parser;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.xslf.XSLFSlideShow;
 import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
@@ -67,6 +65,12 @@ public class Pptx extends ParserAbstract {
 	final protected static ParserField SUBJECT = ParserField.newString(
 			"subject", "The subject of the document");
 
+	final protected static ParserField CREATION_DATE = ParserField.newDate(
+			"creation_date", null);
+
+	final protected static ParserField MODIFICATION_DATE = ParserField.newDate(
+			"modification_date", null);
+
 	final protected static ParserField SLIDES = ParserField.newString("slides",
 			null);
 
@@ -83,8 +87,8 @@ public class Pptx extends ParserAbstract {
 			"lang_detection", "Detection of the language");
 
 	final protected static ParserField[] FIELDS = { TITLE, CREATOR,
-			DESCRIPTION, KEYWORDS, SUBJECT, SLIDES, MASTER, NOTES, COMMENTS,
-			LANG_DETECTION };
+			DESCRIPTION, KEYWORDS, SUBJECT, CREATION_DATE, MODIFICATION_DATE,
+			SLIDES, MASTER, NOTES, COMMENTS, LANG_DETECTION };
 
 	public Pptx() {
 	}
@@ -101,17 +105,10 @@ public class Pptx extends ParserAbstract {
 
 	@Override
 	protected void parseContent(InputStream inputStream) throws Exception {
-		File tempFile = File.createTempFile("oss_text_extractor", ".pptx");
-		FileOutputStream fos = null;
+		File tempFile = ParserAbstract.createTempFile(inputStream, "pptx");
 		try {
-			fos = new FileOutputStream(tempFile);
-			IOUtils.copy(inputStream, fos);
-			fos.close();
-			fos = null;
 			parseContent(tempFile);
 		} finally {
-			if (fos != null)
-				IOUtils.closeQuietly(fos);
 			tempFile.delete();
 		}
 	}
@@ -133,6 +130,8 @@ public class Pptx extends ParserAbstract {
 				metas.add(SUBJECT, info.getSubject());
 				metas.add(DESCRIPTION, info.getDescription());
 				metas.add(KEYWORDS, info.getKeywords());
+				metas.add(CREATION_DATE, info.getCreated());
+				metas.add(MODIFICATION_DATE, info.getModified());
 			}
 		} finally {
 			poiExtractor.close();

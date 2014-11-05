@@ -15,34 +15,24 @@
  */
 package com.opensearchserver.textextractor.parser;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.POIXMLProperties.CoreProperties;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.hpsf.SummaryInformation;
+import org.apache.poi.hssf.extractor.ExcelExtractor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.opensearchserver.textextractor.ParserAbstract;
 import com.opensearchserver.textextractor.ParserDocument;
 import com.opensearchserver.textextractor.ParserField;
 
-public class Docx extends ParserAbstract {
+public class Xls extends ParserAbstract {
 
 	final protected static ParserField TITLE = ParserField.newString("title",
 			"The title of the document");
 
-	final protected static ParserField CREATOR = ParserField.newString(
-			"creator", "The name of the creator");
-
-	final protected static ParserField CREATION_DATE = ParserField.newDate(
-			"creation_date", null);
-
-	final protected static ParserField MODIFICATION_DATE = ParserField.newDate(
-			"modification_date", null);
-
-	final protected static ParserField DESCRIPTION = ParserField.newString(
-			"description", null);
+	final protected static ParserField AUTHOR = ParserField.newString("author",
+			"The name of the author");
 
 	final protected static ParserField KEYWORDS = ParserField.newString(
 			"keywords", null);
@@ -50,17 +40,22 @@ public class Docx extends ParserAbstract {
 	final protected static ParserField SUBJECT = ParserField.newString(
 			"subject", "The subject of the document");
 
+	final protected static ParserField CREATION_DATE = ParserField.newDate(
+			"creation_date", null);
+
+	final protected static ParserField MODIFICATION_DATE = ParserField.newDate(
+			"modification_date", null);
+
 	final protected static ParserField CONTENT = ParserField.newString(
 			"content", "The content of the document");
 
 	final protected static ParserField LANG_DETECTION = ParserField.newString(
 			"lang_detection", "Detection of the language");
 
-	final protected static ParserField[] FIELDS = { TITLE, CREATOR,
-			CREATION_DATE, MODIFICATION_DATE, DESCRIPTION, KEYWORDS, SUBJECT,
-			CONTENT, LANG_DETECTION };
+	final protected static ParserField[] FIELDS = { TITLE, AUTHOR, KEYWORDS,
+			SUBJECT, CREATION_DATE, MODIFICATION_DATE, CONTENT, LANG_DETECTION };
 
-	public Docx() {
+	public Xls() {
 	}
 
 	@Override
@@ -74,29 +69,30 @@ public class Docx extends ParserAbstract {
 	}
 
 	@Override
-	protected void parseContent(InputStream inputStream) throws IOException {
+	protected void parseContent(InputStream inputStream) throws Exception {
 
-		XWPFDocument document = new XWPFDocument(inputStream);
-		XWPFWordExtractor word = null;
+		HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
+		ExcelExtractor excel = null;
 		try {
-			word = new XWPFWordExtractor(document);
+			excel = new ExcelExtractor(workbook);
 
-			CoreProperties info = word.getCoreProperties();
+			SummaryInformation info = excel.getSummaryInformation();
 			if (info != null) {
 				metas.add(TITLE, info.getTitle());
-				metas.add(CREATOR, info.getCreator());
-				metas.add(CREATION_DATE, info.getCreated());
-				metas.add(MODIFICATION_DATE, info.getModified());
+				metas.add(AUTHOR, info.getAuthor());
 				metas.add(SUBJECT, info.getSubject());
-				metas.add(DESCRIPTION, info.getDescription());
+				metas.add(CREATION_DATE, info.getCreateDateTime());
+				metas.add(MODIFICATION_DATE, info.getLastSaveDateTime());
 				metas.add(KEYWORDS, info.getKeywords());
 			}
-			ParserDocument parserDocument = getNewParserDocument();
-			parserDocument.add(CONTENT, word.getText());
-			parserDocument.add(LANG_DETECTION,
-					languageDetection(CONTENT, 10000));
+
+			ParserDocument result = getNewParserDocument();
+			result.add(CONTENT, excel.getText());
+			result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 		} finally {
-			IOUtils.closeQuietly(word);
+			if (excel != null)
+				IOUtils.closeQuietly(excel);
 		}
+
 	}
 }

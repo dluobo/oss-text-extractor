@@ -22,14 +22,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.opensearchserver.textextractor.parser.Audio;
 import com.opensearchserver.textextractor.parser.Doc;
 import com.opensearchserver.textextractor.parser.Docx;
+import com.opensearchserver.textextractor.parser.Image;
 import com.opensearchserver.textextractor.parser.Odf;
 import com.opensearchserver.textextractor.parser.PdfBox;
 import com.opensearchserver.textextractor.parser.Ppt;
 import com.opensearchserver.textextractor.parser.Pptx;
 import com.opensearchserver.textextractor.parser.Rtf;
 import com.opensearchserver.textextractor.parser.Text;
+import com.opensearchserver.textextractor.parser.Xls;
+import com.opensearchserver.textextractor.parser.Xlsx;
 
 public class ParserList {
 
@@ -40,14 +44,18 @@ public class ParserList {
 	static {
 		parsers = new LinkedHashMap<String, Class<? extends ParserAbstract>>();
 
+		register(Audio.class);
 		register(Doc.class);
 		register(Docx.class);
+		register(Image.class);
 		register(Odf.class);
 		register(PdfBox.class);
 		register(Ppt.class);
 		register(Pptx.class);
 		register(Rtf.class);
 		register(Text.class);
+		register(Xls.class);
+		register(Xlsx.class);
 	}
 
 	public final static void register(
