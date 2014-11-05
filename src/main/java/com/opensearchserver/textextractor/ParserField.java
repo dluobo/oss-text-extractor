@@ -15,6 +15,8 @@
  */
 package com.opensearchserver.textextractor;
 
+import java.util.Comparator;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -56,6 +58,19 @@ public class ParserField {
 
 	public static enum Type {
 		STRING, INTEGER, DATE;
-
 	}
+
+	private static class ParserFieldComparator implements
+			Comparator<ParserField> {
+
+		@Override
+		public int compare(ParserField o1, ParserField o2) {
+			return o1.name.compareTo(o2.name);
+		}
+	}
+
+	/*
+	 * Use to sort the field by name
+	 */
+	public final static ParserFieldComparator COMPARATOR = new ParserFieldComparator();
 }

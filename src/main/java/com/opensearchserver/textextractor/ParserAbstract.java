@@ -48,6 +48,17 @@ public abstract class ParserAbstract {
 		return document;
 	}
 
+	protected String getParameterValue(ParserField param, int position) {
+		if (parameters == null)
+			return null;
+		List<String> values = parameters.get(param.name);
+		if (values == null)
+			return null;
+		if (position >= values.size())
+			return null;
+		return values.get(position);
+	}
+
 	/**
 	 * The parameters of the parser
 	 * 
@@ -125,12 +136,6 @@ public abstract class ParserAbstract {
 
 	final private void setUriParameters(UriInfo uriInfo) {
 		parameters = uriInfo == null ? null : uriInfo.getQueryParameters();
-	}
-
-	final List<String> getParameters(ParserField parserField) {
-		if (parameters == null)
-			return null;
-		return parameters.get(parserField.name);
 	}
 
 	/**

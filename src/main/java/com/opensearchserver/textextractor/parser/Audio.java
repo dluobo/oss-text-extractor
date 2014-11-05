@@ -17,90 +17,65 @@ package com.opensearchserver.textextractor.parser;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.SupportedFileFormat;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.TagTextField;
 
 import com.opensearchserver.textextractor.ParserAbstract;
-import com.opensearchserver.textextractor.ParserDocument;
 import com.opensearchserver.textextractor.ParserField;
 
 public class Audio extends ParserAbstract {
 
-	final protected static ParserField NAME = ParserField.newString("name",
-			null);
+	final protected static Map<FieldKey, ParserField> FIELDMAP;
+	final protected static ParserField[] FIELDS;
 
-	final protected static ParserField ARTIST = ParserField.newString("artist",
-			null);
-
-	final protected static ParserField ALBUM = ParserField.newString("album",
-			null);
-
-	final protected static ParserField ALBUM_ARTIST = ParserField.newString(
-			"album_artist", null);
-
-	final protected static ParserField TITLE = ParserField.newString("title",
-			null);
-
-	final protected static ParserField TRACK = ParserField.newString("track",
-			null);
-
-	final protected static ParserField YEAR = ParserField.newInteger("year",
-			null);
-
-	final protected static ParserField GENRE = ParserField.newString("genre",
-			null);
-
-	final protected static ParserField COMMENT = ParserField.newString(
-			"comment", null);
-
-	final protected static ParserField COMPOSER = ParserField.newString(
-			"composer", null);
-
-	final protected static ParserField GROUPING = ParserField.newString(
-			"grouping", null);
-
-	final protected static ParserField[] FIELDS = { NAME, ARTIST, ALBUM,
-			ALBUM_ARTIST, TITLE, TRACK, YEAR, GENRE, COMMENT, COMPOSER,
-			GROUPING };
+	final protected static ParserField FORMAT;
 
 	static {
-		AudioFileIO.logger.setLevel(Level.OFF);
+		// Build the list of extension for the FORMAT parameter
+		StringBuilder sb = new StringBuilder("Supported format: ");
+		boolean first = true;
+		for (SupportedFileFormat sff : SupportedFileFormat.values()) {
+			if (!first)
+				sb.append(", ");
+			else
+				first = false;
+			sb.append(sff.getFilesuffix());
+		}
+		FORMAT = ParserField.newString("format", sb.toString());
+
+		// Build the list of fields returned by the library
+		FIELDMAP = new HashMap<FieldKey, ParserField>();
+		for (FieldKey fieldKey : FieldKey.values())
+			FIELDMAP.put(fieldKey,
+					ParserField.newString(fieldKey.name().toLowerCase(), null));
+		FIELDS = FIELDMAP.values().toArray(new ParserField[FIELDMAP.size()]);
+		Arrays.sort(FIELDS, ParserField.COMPARATOR);
 	}
+
+	final protected static ParserField[] PARAMETERS = { FORMAT };
 
 	public Audio() {
 	}
 
 	@Override
 	protected ParserField[] getParameters() {
-		return null;
+		return PARAMETERS;
 	}
 
 	@Override
 	protected ParserField[] getFields() {
 		return FIELDS;
-	}
-
-	private void addFields(ParserDocument result, Tag tag, FieldKey fieldKey,
-			ParserField parserField) {
-		List<TagField> list = tag.getFields(fieldKey);
-		if (list != null && list.size() > 0) {
-			for (TagField field : list)
-				result.add(parserField, field.toString());
-			return;
-		}
-		String f = tag.getFirst(fieldKey);
-		if (f == null)
-			return;
-		f = f.trim();
-		if (f.length() == 0)
-			return;
-		result.add(parserField, f);
 	}
 
 	@Override
@@ -109,20 +84,28 @@ public class Audio extends ParserAbstract {
 		Tag tag = f.getTag();
 		if (tag == null)
 			return;
-		addFields(metas, tag, FieldKey.TITLE, TITLE);
-		addFields(metas, tag, FieldKey.ARTIST, ARTIST);
-		addFields(metas, tag, FieldKey.ALBUM, ALBUM);
-		addFields(metas, tag, FieldKey.YEAR, YEAR);
-		addFields(metas, tag, FieldKey.TRACK, TRACK);
-		addFields(metas, tag, FieldKey.ALBUM_ARTIST, ALBUM_ARTIST);
-		addFields(metas, tag, FieldKey.COMMENT, COMMENT);
-		addFields(metas, tag, FieldKey.COMPOSER, COMPOSER);
-		addFields(metas, tag, FieldKey.GROUPING, GROUPING);
+		if (tag.getFieldCount() == 0)
+			return;
+		for (Map.Entry<FieldKey, ParserField> entry : FIELDMAP.entrySet()) {
+			List<TagField> tagFields = tag.getFields(entry.getKey());
+			if (tagFields == null)
+				continue;
+			for (TagField tagField : tagFields) {
+				if (!(tagField instanceof TagTextField))
+					continue;
+				metas.add(entry.getValue(),
+						((TagTextField) tagField).getContent());
+			}
+		}
 	}
 
 	@Override
 	protected void parseContent(InputStream inputStream) throws Exception {
-		File tempFile = ParserAbstract.createTempFile(inputStream, "audio");
+		String format = getParameterValue(FORMAT, 0);
+		if (StringUtils.isEmpty(format))
+			throw new Exception("The format parameter is missing");
+		File tempFile = ParserAbstract
+				.createTempFile(inputStream, '.' + format);
 		try {
 			parseContent(tempFile);
 		} finally {
