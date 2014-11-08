@@ -1,0 +1,3 @@
+release date=11:37 08.11.2014,version=1.0~SNAPSHOT,urgency=low,by=Emmanuel Keller <ekeller@open-search-server.com>,distribution=unknown
+ * Change 1
+ * Change 2

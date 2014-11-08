@@ -51,8 +51,8 @@ public class Main extends Application {
 	public static void main(String[] args) throws IOException, ParseException {
 		Logger.getLogger("").setLevel(Level.WARNING);
 		Options options = new Options();
-		options.addOption("help", false, "print this message");
-		options.addOption("port", true, "TCP port");
+		options.addOption("h", "help", false, "print this message");
+		options.addOption("p", "port", true, "TCP port");
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = parser.parse(options, args);
 		if (cmd.hasOption("help")) {
@@ -61,8 +61,8 @@ public class Main extends Application {
 					options);
 			return;
 		}
-		int port = cmd.hasOption("port") ? Integer.parseInt(cmd
-				.getOptionValue("port")) : 9091;
+		int port = cmd.hasOption("p") ? Integer.parseInt(cmd
+				.getOptionValue("p")) : 9091;
 		UndertowJaxrsServer server = new UndertowJaxrsServer().start(Undertow
 				.builder().addHttpListener(port, "localhost"));
 		server.deploy(Main.class);
