@@ -46,7 +46,7 @@ start)
             if [ -z $PID ]; then
                echo "$OSS_NAME starting failed"
             else
-               echo $PID > $SERVER_PID
+               echo $PID > $OSS_PID
                echo "$OSS_NAME started ..."
             fi
         fi
