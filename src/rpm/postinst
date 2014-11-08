@@ -1,1 +1,1 @@
-cp -f /usr/share/opensearchserver/oss-text-extractor /etc/init.d/oss-text-extractor && chmod a+x /etc/init.d/oss-text-extrator
+cp -f /usr/share/opensearchserver/oss-text-extractor /etc/init.d/oss-text-extractor && chmod a+x /etc/init.d/oss-text-extractor
