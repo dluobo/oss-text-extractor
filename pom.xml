@@ -329,14 +329,10 @@
 						<require>java &gt;= 1.7.0</require>
 					</requires>
 					<preinstallScriptlet>
-						<script>getent passwd opensearchserver &gt;/dev/null || useradd -r
-							-g daemon -d /var/lib/opensearchserver -s /bin/bash -c
-							"OpenSearchServer" opensearchserver</script>
+						<scriptFile>src/rpm/preinst</scriptFile>
 					</preinstallScriptlet>
 					<postinstallScriptlet>
-						<script>cp -f /usr/share/opensearchserver/oss-text-extractor
-							/etc/init.d/oss-text-extrator &amp;&amp; chmod a+x
-							/etc/init.d/oss-text-extrator</script>
+						<scriptFile>src/rpm/postinst</scriptFile>
 					</postinstallScriptlet>
 				</configuration>
 			</plugin>
