@@ -1,8 +1,8 @@
-OSSTextExtractor
-================
+OpenSearchServer Text Extractor
+===============================
 
-An RESTFul Web Service for text extraction and analysis.
-OSSTextExtractor support various binary formats.
+A RESTFul Web Service for text extraction and analysis.
+Oss-text-extractor supports various binary formats.
 
 - Word processor (doc, docx, odt, rtf)
 - Spreadsheet (xls, xlsx, ods)
@@ -37,10 +37,10 @@ To run the server, open a shell and start the daemon:
 java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
 ```
 
-The default TCP port is 9091. To change it use the the -port option.
+The default TCP port is 9091. To change it use the the -p option.
 
 ```shell
-java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar -port 9092
+java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
 ```
 
 ## APIs
