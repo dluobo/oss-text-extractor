@@ -6,27 +6,9 @@ oss-text-extractor supports various binary formats (Word processor, Spreadsheet,
 
 OSS-TEXT-EXTRACTOR is part of the OpenSearchServer set of components.
 
-### Summary
-
-- [Installation](installation)
-- [Usage](usage)
-- [Source code](https://github.com/opensearchserver/oss-text-extractor)
-- [Compile and build](compile-and-build)
-- [How to contribute](contribute)
-
-### Extractor list in alphabetical order
-
-- [audio](audio)
-- [doc](doc)
-- [docx](docx)
-- [html](html)
-- [image](image)
-- [odf (ODT, ODS, ODP)](odf)
-- [ppt](ppt)
-- [pptx](pptx)
-- [rtf](rtf)
-- [rss](rss)
-- [text](text)
-- [xls](xls)
-- [xlsx](xlsx)
-- [vsd](vsd)
+- [Installation](installation.md)
+- [Usage](usage.md)
+- [Extractor list in alphabetical order](extractor/README.md)
+- [Source code](https://github.com/opensearchserver/oss-text-extractor.md)
+- [Compile and build](compile-and-build.md)
+- [How to contribute](contribute.md)
