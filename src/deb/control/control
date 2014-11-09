@@ -1,0 +1,20 @@
+Package: oss-text-extractor
+Version: [[version]]
+Section: java
+Priority: optional
+Architecture: all
+Description: RESTFul Web Service for text extraction and analysis
+  A RESTFul Web Service for text extraction and analysis.
+  OSSTextExtractor supports various binary formats:
+  - Word processor (doc, docx, odt, rtf),
+  - Spreadsheet (doc, docx, odt, rtf),
+  - Presentation  (ppt, pptx, odp),
+  - Publishing(pdf, pub), 
+  - Web (rss, html/xhtml),
+  - Medias (audio, images),
+  - Others (vsd, text).
+  OSSTextExtractor is a part of the OpenSearchServer suite.
+Recommends: ghostscript, tesseract-ocr
+Maintainer: Emmanuel Keller <ekeller@open-search-server.com>
+Homepage: http://www.opensearchserver.com/textextractor
+Vcs-Git: https://github.com/opensearchserver/oss-text-extractor.git

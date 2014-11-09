@@ -1,8 +1,8 @@
-OSSTextExtractor
-================
+OpenSearchServer Text Extractor
+===============================
 
-An RESTFul Web Service for text extraction and analysis.
-OSSTextExtractor support various binary formats.
+A RESTFul Web Service for text extraction and analysis.
+Oss-text-extractor supports various binary formats.
 
 - Word processor (doc, docx, odt, rtf)
 - Spreadsheet (xls, xlsx, ods)
@@ -19,7 +19,7 @@ Compiling the service requires Maven 2.2.1 and Java 7.
 Get the source code:
 
 ```shell
-git clone https://github.com/opensearchserver/oss_text_extractor.git
+git clone https://github.com/opensearchserver/oss-text-extractor.git
 ```
     
 Compile:
@@ -37,10 +37,10 @@ To run the server, open a shell and start the daemon:
 java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
 ```
 
-The default TCP port is 9091. To change it use the the -port option.
+The default TCP port is 9091. To change it use the the -p option.
 
 ```shell
-java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar -port 9092
+java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
 ```
 
 ## APIs
@@ -124,7 +124,7 @@ The parser extracts the metas and text information using the following JSON form
 
 ## Contribute
 
-Writing a parser is easy. Just extends the abstract class [ParserAbstract](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/ParserAbstract.java) and implements the required methods.
+Writing a parser is easy. Just extends the abstract class [ParserAbstract](https://github.com/opensearchserver/oss-text-extractor/blob/master/src/main/java/com/opensearchserver/textextractor/ParserAbstract.java) and implements the required methods.
 
 ```java
 protected void parseContent(InputStream inputStream) throws Exception;
@@ -132,7 +132,7 @@ protected void parseContent(InputStream inputStream) throws Exception;
 
 The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...). A Parser Document is a list of name/value pair.
 
-Have a look at the [Rtf](https://github.com/opensearchserver/oss_text_extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/rtf.java) class to see a simple example.
+Have a look at the [Rtf](https://github.com/opensearchserver/oss-text-extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/rtf.java) class to see a simple example.
 
 ```java
 	@Override

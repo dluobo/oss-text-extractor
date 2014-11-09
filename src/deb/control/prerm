@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ /etc/init.d/oss-text-extractor ]; then
+	if which invoke-rc.d >/dev/null 2>&1; then
+		invoke-rc.d oss-text-extractor stop
+	else
+		/etc/init.d/oss-text-extractor stop
+	fi
+fi
