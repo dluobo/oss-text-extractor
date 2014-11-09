@@ -103,7 +103,7 @@ public abstract class ParserAbstract {
 
 	protected final static File createTempFile(InputStream inputStream,
 			String extension) throws IOException {
-		File tempFile = File.createTempFile("oss_text_extractor", extension);
+		File tempFile = File.createTempFile("oss-text-extractor", extension);
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(tempFile);

@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: oss-text-extractor
-Source: https://github.com/opensearchserver/oss_text_extractor
+Source: https://github.com/opensearchserver/oss-text-extractor
 
 Files: *
 Copyright: Copyright 2014 OpenSearchServer Inc.<contact@opensearchserver.com>
