@@ -1,8 +1,8 @@
 OpenSearchServer Text Extractor
 ===============================
 
-A RESTFul Web Service for text extraction and analysis.
-Oss-text-extractor supports various binary formats.
+An open source RESTFul Web Service for text extraction and analysis.  
+**oss-text-extractor** supports various binary formats.
 
 - Word processor (doc, docx, odt, rtf)
 - Spreadsheet (xls, xlsx, ods)
@@ -15,6 +15,7 @@ Oss-text-extractor supports various binary formats.
 Links
 -----
 
+- [Home page](http://www.opensearchserver.com/oss-text-extractor/README.md)
 - [Installation](http://www.opensearchserver.com/oss-text-extractor/installation.md)
 - [Usage](http://www.opensearchserver.com/oss-text-extractor/usage.md)
 - [Extractor list in alphabetical order](http://www.opensearchserver.com/oss-text-extractor/extractor/README.md)
@@ -25,19 +26,19 @@ Links
 Quickstart
 ----------
 
-## Requires JAVA
+### Requires JAVA
 
 Check that you have installed a [JAVA Runtime Environment 7 or newer](http://openjdk.java.net/install/)
 
-## Download or compile the JAR:
+### Download or compile the JAR:
 
-### Download:
+#### Download:
 
 ```shell
 wget https://github.com/opensearchserver/oss-text-extractor/releases/download/v1.0/oss-text-extractor-1.0.jar
 ```
 
-### Or clone and compile:
+#### Or clone and compile:
 
 The compilation and packaging requires [Maven 3.0 or newer](http://maven.apache.org/)
 
@@ -53,27 +54,27 @@ Compile and package (the binary will located in the target directory):
 mvn clean package
 ```
 
-## Usage
+### Usage
 
-### Start the server
+#### Start the server
 
 ```shell
 java -jar target/oss-text-extractor-xxx-exec.jar
 ```
 
-### Obtain the parser list
+#### Obtain the parser list
 
 ```shell
 curl -XGET http://localhost:9091
 ```
 
-### Get information about a parser
+#### Get information about a parser
 
 ```shell
 curl -XGET http://localhost:9091/pdfbox
 ```
     
-### Submit a document to a parser
+#### Submit a document to a parser
 
 By upload a document:
 
@@ -83,10 +84,12 @@ curl -XPUT --data-binary @tutorial.pdf http://localhost:9091/pdfbox
     
 If the file is already available in the server, the follow API is available:
 
-* Method: GET
-* URL: http://{hostname}:{port}/{parser_name}?path=file_path
+```shell
+curl -XGET http://localhost:9091/pdfbox?path=/home/user/myfile.pdf
+```
 
-## License
+License
+-------
 
 Copyright 2014 [OpenSearchServer Inc.](http://www.opensearchserver.com)
 
