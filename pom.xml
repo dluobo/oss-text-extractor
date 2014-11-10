@@ -26,6 +26,17 @@
 		<developerConnection>scm:git:git@github.com:opensearchserver/oss-text-extractor.git</developerConnection>
 		<url>git@github.com:opensearchserver/oss-text-extractor.git</url>
 	</scm>
+	<issueManagement>
+		<url>https://github.com/opensearchserver/oss-text-extractor/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<url>http://www.open-search-server.com/jenkins</url>
+	</ciManagement>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
