@@ -4,7 +4,7 @@ Installation
 Requirement
 -----------
 
-oss-text-extractor requires at least a JAVA Runtime Environment 7.
+oss-text-extractor requires a [JAVA Runtime Environment 7 or newer](http://openjdk.java.net/install/)
 
 Download the binary package
 ---------------------------

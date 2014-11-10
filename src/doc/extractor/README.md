@@ -1,5 +1,5 @@
 Extractor list
-=============
+==============
 
 This is the list of existing text extractor. Click on the links to have more details.
 
