@@ -12,86 +12,70 @@ Oss-text-extractor supports various binary formats.
 - Medias (audio, images)
 - Others (vsd, text)
 
-## How to build
+Links
+-----
 
-Compiling the service requires Maven 2.2.1 and Java 7.
- 
-Get the source code:
+- [Installation](http://www.opensearchserver.com/oss-text-extractor/installation.md)
+- [Usage](http://www.opensearchserver.com/oss-text-extractor/usage.md)
+- [Extractor list in alphabetical order](http://www.opensearchserver.com/oss-text-extractor/extractor/README.md)
+- [Source code](https://github.com/opensearchserver/oss-text-extractor)
+- [Compile and build](http://www.opensearchserver.com/oss-text-extractor/compile-and-build.md)
+- [How to contribute](http://www.opensearchserver.com/oss-text-extractor/contribute.md)
+
+Quickstart
+----------
+
+## Requires JAVA
+
+Check that you have installed a [JAVA Runtime Environment 7 or newer](http://openjdk.java.net/install/)
+
+## Download or compile the JAR:
+
+### Download:
+
+```shell
+wget https://github.com/opensearchserver/oss-text-extractor/releases/download/v1.0/oss-text-extractor-1.0.jar
+```
+
+### Or clone and compile:
+
+The compilation and packaging requires [Maven 3.0 or newer](http://maven.apache.org/)
+
+Clone the source code:
 
 ```shell
 git clone https://github.com/opensearchserver/oss-text-extractor.git
 ```
-    
-Compile:
+
+Compile and package (the binary will located in the target directory):
 
 ```shell
 mvn clean package
 ```
 
-## Starting the server
+## Usage
 
-TextExtractor works on Linux, Windows, Mac OS with a JAVA 7.
-To run the server, open a shell and start the daemon:
-
-```shell
-java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
-```
-
-The default TCP port is 9091. To change it use the the -p option.
+### Start the server
 
 ```shell
-java -jar target/oss-text-extractor-1.0-SNAPSHOT.jar
+java -jar target/oss-text-extractor-xxx-exec.jar
 ```
-
-## APIs
 
 ### Obtain the parser list
-
-* Method: GET
-* URL: http://{hostname}:{port}/
 
 ```shell
 curl -XGET http://localhost:9091
 ```
 
-The function return the list of available parsers.
-
-```json
-["doc","docx","pdfbox"]
-```
-
 ### Get information about a parser
-
-* Method: GET
-* URL: http://{hostname}:{port}/{parser_name}
 
 ```shell
 curl -XGET http://localhost:9091/pdfbox
 ```
-
-The function displays which fields are returned by the parser.
-
-```json
-{
-  "fields":
-  	[
-		{"name":"title", "type":"STRING", "description":"The title of the Word document"},
-		{"name":"author","type":"STRING","description":"The name of the author"},
-		{"name":"subject","type":"STRING","description":"The subject of the document"},
-		{"name":"content","type":"STRING","description":"The content of the document"},
-		{"name":"producer","type":"STRING","description":"The producer of the document"},
-		{"name":"keywords","type":"STRING","description":"The keywords of the document"},
-		{"name":"creation_date","type":"DATE"},{"name":"modification_date","type":"DATE"},
-		{"name":"language","type":"STRING"},{"name":"number_of_pages","type":"INTEGER"}
-	]
-}
-```
     
 ### Submit a document to a parser
 
-* Method: PUT
-* URL: http://{hostname}:{port}/{parser_name}
-* Payload: The document
+By upload a document:
 
 ```shell
 curl -XPUT --data-binary @tutorial.pdf http://localhost:9091/pdfbox
@@ -101,62 +85,6 @@ If the file is already available in the server, the follow API is available:
 
 * Method: GET
 * URL: http://{hostname}:{port}/{parser_name}?path=file_path
-
-```shell
-curl -XGET http://localhost:9091/pdfbox?path=/home/manu/tutorial.pdf
-```
-
-The parser extracts the metas and text information using the following JSON format:
-
-```json
-{
-	"time_elapsed": 2735,
-	"metas": {
-		"number_of_pages": [7],
-		"producer": ["FOP 0.20.5"]
-	},
-	"documents": [ {
-		"content": ["Table of contents Requirements Getting Started Deleting Querying Data Sorting Text  Analysis Debugging"],
-		"character_count":[13634]
-	} ]
-}
-```
-
-## Contribute
-
-Writing a parser is easy. Just extends the abstract class [ParserAbstract](https://github.com/opensearchserver/oss-text-extractor/blob/master/src/main/java/com/opensearchserver/textextractor/ParserAbstract.java) and implements the required methods.
-
-```java
-protected void parseContent(InputStream inputStream) throws Exception;
-```
-
-The parse must build a list of ParserDocument. A parser may return one or more documents (one document per page, one document per RSS item, ...). A Parser Document is a list of name/value pair.
-
-Have a look at the [Rtf](https://github.com/opensearchserver/oss-text-extractor/blob/master/src/main/java/com/opensearchserver/textextractor/parser/rtf.java) class to see a simple example.
-
-```java
-	@Override
-	protected void parseContent(InputStream inputStream) throws Exception {
-
-		// Extract the text data
-		RTFEditorKit rtf = new RTFEditorKit();
-		Document doc = rtf.createDefaultDocument();
-		rtf.read(inputStream, doc, 0);
-
-		// Fill the metas
-		metas.add(TITLE, "title of the document");
-		
-		// Obtain a new parser document.
-		ParserDocument result = getNewParserDocument();
-
-		// Fill the field of the ParserDocument
-		result.add(CONTENT, doc.getText(0, doc.getLength()));
-
-		// Apply the language detection
-		result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
-
-	}
-```
 
 ## License
 

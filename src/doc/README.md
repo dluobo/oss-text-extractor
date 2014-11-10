@@ -9,6 +9,6 @@ OSS-TEXT-EXTRACTOR is part of the OpenSearchServer set of components.
 - [Installation](installation.md)
 - [Usage](usage.md)
 - [Extractor list in alphabetical order](extractor/README.md)
-- [Source code](https://github.com/opensearchserver/oss-text-extractor.md)
+- [Source code](https://github.com/opensearchserver/oss-text-extractor)
 - [Compile and build](compile-and-build.md)
 - [How to contribute](contribute.md)
