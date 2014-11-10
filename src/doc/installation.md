@@ -1,11 +1,13 @@
 Installation
 ============
 
-### Requirement
+Requirement
+-----------
 
 oss-text-extractor requires at least a JAVA Runtime Environment 7.
 
-### Download the binary package
+Download the binary package
+---------------------------
 
 The official releases are available here
 [Stable Releases](https://github.com/opensearchserver/oss-text-extractor/releases)
@@ -19,21 +21,22 @@ The following files are available:
 - The DEB package for Debian, Ubuntu: oss-text-extractor-x.x.x-SNAPSHOT.deb
 - JAR file for a manual installation: oss-text-extractor-x.x.x-SNAPSHOT-exec.jar
 
-### Install using the package manager
+Install using the package manager
+---------------------------------
 
-#### RPM (CentOS, Fedora, RedHat)
+### RPM (CentOS, Fedora, RedHat)
 
 This is a standard RPM package.
 
     rpm -ivh oss-text-extractor-x.x.x-1.noarch.rpm
 
-#### DEB (Debian, Ubuntu)
+### DEB (Debian, Ubuntu)
 
 This is a standard DEB package.
 
     dpkg -i oss-text-extractor-x.x.x-SNAPSHOT.deb
     
-#### Running
+### Running
 
 To start the daemon:
 
@@ -47,7 +50,7 @@ The status of the daemon:
 
     service oss-text-extractor status
 
-#### What is installed
+### What is installed
 
 - **dir** /var/lib/opensearchserver : The data directory
 - **dir** /usr/share/opensearchserver/
@@ -57,7 +60,7 @@ The status of the daemon:
 - **dir** /etc/opensearchserver : contains the configuration files
 - **dir** /etc/opensearchserver/oss-text-extractor : the configuration file
 
-#### The configuration file
+### The configuration file
 
 The configuration file is located in /etc/opensearchserver/oss-text-extractor.
 You can change the TCP port used by the server. You may also change the default memory allocation.
@@ -71,8 +74,8 @@ SERVER_PORT=9091
 #JAVA_OPTS="-Xms1G -Xmx4G"
 ```
 
-
-### Manual installation
+Manual installation
+-------------------
 
 Just start the program:
 
