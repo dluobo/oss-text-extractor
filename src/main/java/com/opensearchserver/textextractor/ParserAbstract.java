@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.IOUtils;
 
@@ -117,25 +116,24 @@ public abstract class ParserAbstract {
 		}
 	}
 
-	final ParserResult doParsing(UriInfo uriInfo, InputStream inputStream)
+	public final ParserResult doParsing(
+			MultivaluedMap<String, String> parameters, InputStream inputStream)
 			throws Exception {
-		setUriParameters(uriInfo);
+		this.parameters = parameters;
 		ParserResult result = new ParserResult();
 		parseContent(inputStream);
 		result.done(metas, documents);
 		return result;
 	}
 
-	final ParserResult doParsing(UriInfo uriInfo, File file) throws Exception {
-		setUriParameters(uriInfo);
+	public final ParserResult doParsing(
+			MultivaluedMap<String, String> parameters, File file)
+			throws Exception {
+		this.parameters = parameters;
 		ParserResult result = new ParserResult();
 		parseContent(file);
 		result.done(metas, documents);
 		return result;
-	}
-
-	final private void setUriParameters(UriInfo uriInfo) {
-		parameters = uriInfo == null ? null : uriInfo.getQueryParameters();
 	}
 
 	/**
