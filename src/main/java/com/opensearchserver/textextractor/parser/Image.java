@@ -21,7 +21,11 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import com.opensearchserver.textextractor.ParserAbstract;
 import com.opensearchserver.textextractor.ParserDocument;
@@ -58,6 +62,31 @@ public class Image extends ParserAbstract {
 		return FIELDS;
 	}
 
+	private void browseNodes(String path, Node root, ParserDocument result) {
+		if (root == null)
+			return;
+		switch (root.getNodeType()) {
+		case Node.TEXT_NODE:
+			result.add(ParserField.newString(path, null), root.getTextContent());
+			break;
+		case Node.ELEMENT_NODE:
+			NamedNodeMap nnm = root.getAttributes();
+			if (nnm != null)
+				for (int i = 0; i < nnm.getLength(); i++)
+					browseNodes(path, nnm.item(i), result);
+			Node child = root.getFirstChild();
+			while (child != null) {
+				browseNodes(path + "/" + child.getNodeName(), child, result);
+				child = child.getNextSibling();
+			}
+			break;
+		case Node.ATTRIBUTE_NODE:
+			path = path + "#" + root.getNodeName();
+			result.add(ParserField.newString(path, null), root.getNodeValue());
+			break;
+		}
+	}
+
 	@Override
 	protected void parseContent(File file) throws Exception {
 		ImagePHash imgPhash = new ImagePHash();
@@ -73,6 +102,14 @@ public class Image extends ParserAbstract {
 					result.add(HEIGHT, reader.getHeight(0));
 					result.add(FORMAT, reader.getFormatName());
 					result.add(PHASH, imgPhash.getHash(reader.read(0)));
+					IIOMetadata metadata = reader.getImageMetadata(0);
+					if (metadata != null) {
+						String[] names = metadata.getMetadataFormatNames();
+						if (names != null)
+							for (String name : names)
+								browseNodes("META", metadata.getAsTree(name),
+										result);
+					}
 				} finally {
 					reader.dispose();
 				}

@@ -1,3 +1,14 @@
-release date=11:37 08.11.2014,version=1.0~SNAPSHOT,urgency=low,by=Emmanuel Keller <ekeller@open-search-server.com>,distribution=unknown
- * Change 1
- * Change 2
+release date=11:37 11.11.2014,version=1.0~SNAPSHOT,urgency=low,by=Emmanuel Keller <ekeller@open-search-server.com>,distribution=unknown
+ * Add test unit  #29
+ * Add hyperlinks in results (be RESTFul) #20
+ * Initial VISIO parser #19
+ * Initial AUDIO parser #17
+ * Initial TEXT parser (useful for language detection) #13
+ * Initial image parser #10
+ * Initial ODT, ODP and ODS parser #8
+ * Initial RTF parser #7
+ * Initial PPT and PPTX parser #6
+ * Initial XLS and XLSX parser #5
+ * Implements language detection #4
+ * .rpm package (centos, redhat, fedora) #3
+ * .deb package (Ubuntu, Debian) #2

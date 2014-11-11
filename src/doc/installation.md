@@ -4,22 +4,19 @@ Installation
 Requirement
 -----------
 
-oss-text-extractor requires a [JAVA Runtime Environment 7 or newer](http://openjdk.java.net/install/)
+**oss-text-extractor** requires a [JAVA Runtime Environment 7 or newer](http://openjdk.java.net/install/)
 
 Download the binary package
 ---------------------------
 
-The official releases are available here
-[Stable Releases](https://github.com/opensearchserver/oss-text-extractor/releases)
-
-The nightly builds are available here:
-[Snapshot Releases](http://www.open-search-server.com/ftp/oss-text-extractor/?C=M;O=D)
+- The official releases are available here: [Stable Releases](https://github.com/opensearchserver/oss-text-extractor/releases)
+- The nightly builds are available here: [Snapshot Releases](http://www.open-search-server.com/ftp/oss-text-extractor/?C=M;O=D)
 
 The following files are available:
 
 - The RPM package for CentOS, RedHat, Fedora: oss-text-extractor-x.x.x-1.noarch.rpm
 - The DEB package for Debian, Ubuntu: oss-text-extractor-x.x.x-SNAPSHOT.deb
-- JAR file for a manual installation: oss-text-extractor-x.x.x-SNAPSHOT-exec.jar
+- Executable JAR file for a manual installation: oss-text-extractor-x.x.x-SNAPSHOT-exec.jar
 
 Install using the package manager
 ---------------------------------

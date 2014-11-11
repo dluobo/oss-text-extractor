@@ -93,7 +93,10 @@ public class ParserService {
 		if (!file.exists())
 			throwError(Status.NOT_FOUND, "File not found: " + path);
 		try {
-			return parser.doParsing(uriInfo, file);
+			return parser
+					.doParsing(
+							uriInfo == null ? null : uriInfo
+									.getQueryParameters(), file);
 		} catch (Exception e) {
 			throwError(e);
 			return null;
@@ -107,7 +110,9 @@ public class ParserService {
 			@PathParam("name") String parserName, InputStream inputStream) {
 		ParserAbstract parser = getParser(uriInfo, parserName);
 		try {
-			return parser.doParsing(uriInfo, inputStream);
+			return parser.doParsing(
+					uriInfo == null ? null : uriInfo.getQueryParameters(),
+					inputStream);
 		} catch (Exception e) {
 			throwError(e);
 			return null;
