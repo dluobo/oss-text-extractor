@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.FilenameUtils;
@@ -31,8 +32,10 @@ import org.apache.commons.io.IOUtils;
 import com.opensearchserver.textextractor.ParserAbstract;
 import com.opensearchserver.textextractor.ParserList;
 import com.opensearchserver.textextractor.ParserResult;
+import com.opensearchserver.textextractor.parser.Audio;
 import com.opensearchserver.textextractor.parser.Doc;
 import com.opensearchserver.textextractor.parser.Docx;
+import com.opensearchserver.textextractor.parser.Image;
 import com.opensearchserver.textextractor.parser.Odf;
 import com.opensearchserver.textextractor.parser.PdfBox;
 import com.opensearchserver.textextractor.parser.Ppt;
@@ -45,6 +48,8 @@ import com.opensearchserver.textextractor.parser.Xlsx;
 public class AllTest {
 
 	static final Logger logger = Logger.getLogger(AllTest.class.getName());
+
+	static final String DEFAULT_TEST_STRING = "osstextextractor";
 
 	/**
 	 * Check if the parser has been registered, and create the an instance.
@@ -78,14 +83,56 @@ public class AllTest {
 		return tempFile;
 	}
 
+	/**
+	 * Check if the given string is present in a multivalued map
+	 * 
+	 * @param map
+	 * @param text
+	 * @return
+	 */
+	protected boolean checkText(Map<String, List<Object>> map, String text) {
+		if (map == null)
+			return false;
+		for (Map.Entry<String, List<Object>> entry : map.entrySet())
+			for (Object object : entry.getValue())
+				if (object.toString().contains(text))
+					return true;
+		return false;
+	}
+
+	/**
+	 * Check if the given string is present in the result
+	 * 
+	 * @param result
+	 * @param text
+	 */
 	protected void checkText(ParserResult result, String text) {
+		if (text == null)
+			return;
 		for (Map<String, List<Object>> map : result.documents)
-			for (Map.Entry<String, List<Object>> entry : map.entrySet())
-				for (Object object : entry.getValue())
-					if (object.toString().contains(text))
-						return;
-		logger.severe("Text oss-text-extractor not found");
+			if (checkText(map, text))
+				return;
+		if (checkText(result.metas, text))
+			return;
+		logger.severe("Text " + text + " not found");
 		assert (false);
+	}
+
+	/**
+	 * Build a map of parameters using key/value pairs
+	 * 
+	 * @param keyValueParams
+	 * @return
+	 */
+	protected MultivaluedMap<String, String> getParameters(
+			String... keyValueParams) {
+		if (keyValueParams == null)
+			return null;
+		MultivaluedHashMap<String, String> parameters = null;
+		parameters = new MultivaluedHashMap<>();
+		for (int i = 0; i < keyValueParams.length; i += 2)
+			parameters.add(keyValueParams[i], keyValueParams[i + 1]);
+		return parameters;
 	}
 
 	/**
@@ -97,65 +144,107 @@ public class AllTest {
 	 * @throws Exception
 	 */
 	protected void doTest(Class<? extends ParserAbstract> className,
-			String fileName, MultivaluedMap<String, String> parameters)
+			String fileName, String testString, String... keyValueParams)
 			throws Exception {
 		logger.info("Testing " + className);
+		MultivaluedMap<String, String> parameters = getParameters(keyValueParams);
 		ParserAbstract parser = createRegisterInstance(className);
 		parser.doParsing(parameters, getStream(fileName));
 		parser = createRegisterInstance(className);
 		ParserResult parserResult = parser.doParsing(parameters,
 				getTempFile(fileName));
 		assert (parserResult != null);
-		assert (parserResult.documents != null);
-		assert (parserResult.documents.size() > 0);
+		checkText(parserResult, testString);
+	}
+
+	final String AUDIO_TEST_STRING = "opensearchserver";
+
+	public void testAudioFlag() throws Exception {
+		doTest(Audio.class, "file.flac", AUDIO_TEST_STRING, "format", "flac");
+	}
+
+	public void testAudioM4a() throws Exception {
+		doTest(Audio.class, "file.m4a", DEFAULT_TEST_STRING, "format", "m4a");
+	}
+
+	public void testAudioMp3() throws Exception {
+		doTest(Audio.class, "file.mp3", DEFAULT_TEST_STRING, "format", "mp3");
+	}
+
+	public void testAudioOgg() throws Exception {
+		doTest(Audio.class, "file.ogg", AUDIO_TEST_STRING, "format", "ogg");
+	}
+
+	public void testAudioWav() throws Exception {
+		doTest(Audio.class, "file.wav", null, "format", "wav");
+	}
+
+	public void testAudioWma() throws Exception {
+		doTest(Audio.class, "file.wma", AUDIO_TEST_STRING, "format", "wma");
 	}
 
 	public void testDoc() throws Exception {
-		doTest(Doc.class, "file.doc", null);
+		doTest(Doc.class, "file.doc", DEFAULT_TEST_STRING);
 	}
 
 	public void testDocx() throws Exception {
-		doTest(Docx.class, "file.docx", null);
+		doTest(Docx.class, "file.docx", DEFAULT_TEST_STRING);
+	}
+
+	public void testImageGif() throws Exception {
+		doTest(Image.class, "file.gif", DEFAULT_TEST_STRING);
+	}
+
+	public void testImageJpg() throws Exception {
+		doTest(Image.class, "file.jpg", DEFAULT_TEST_STRING);
+	}
+
+	public void testImagePng() throws Exception {
+		doTest(Image.class, "file.png", DEFAULT_TEST_STRING);
+	}
+
+	public void testImageTiff() throws Exception {
+		doTest(Image.class, "file.tiff", null);
 	}
 
 	public void testPdf() throws Exception {
-		doTest(PdfBox.class, "file.pdf", null);
+		doTest(PdfBox.class, "file.pdf", DEFAULT_TEST_STRING);
 	}
 
 	public void testOdt() throws Exception {
-		doTest(Odf.class, "file.odt", null);
+		doTest(Odf.class, "file.odt", DEFAULT_TEST_STRING);
 	}
 
 	public void testOds() throws Exception {
-		doTest(Odf.class, "file.ods", null);
+		doTest(Odf.class, "file.ods", DEFAULT_TEST_STRING);
 	}
 
 	public void testOdp() throws Exception {
-		doTest(Odf.class, "file.odp", null);
+		doTest(Odf.class, "file.odp", DEFAULT_TEST_STRING);
 	}
 
 	public void testPpt() throws Exception {
-		doTest(Ppt.class, "file.ppt", null);
+		doTest(Ppt.class, "file.ppt", DEFAULT_TEST_STRING);
 	}
 
 	public void testPptx() throws Exception {
-		doTest(Pptx.class, "file.pptx", null);
+		doTest(Pptx.class, "file.pptx", DEFAULT_TEST_STRING);
 	}
 
 	public void testRtf() throws Exception {
-		doTest(Rtf.class, "file.rtf", null);
+		doTest(Rtf.class, "file.rtf", DEFAULT_TEST_STRING);
 	}
 
 	public void testText() throws Exception {
-		doTest(Text.class, "file.txt", null);
+		doTest(Text.class, "file.txt", DEFAULT_TEST_STRING);
 	}
 
 	public void testXls() throws Exception {
-		doTest(Xls.class, "file.xls", null);
+		doTest(Xls.class, "file.xls", DEFAULT_TEST_STRING);
 	}
 
 	public void testXlsx() throws Exception {
-		doTest(Xlsx.class, "file.xlsx", null);
+		doTest(Xlsx.class, "file.xlsx", DEFAULT_TEST_STRING);
 	}
 
 }
