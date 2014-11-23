@@ -34,7 +34,8 @@ Check that you have installed a [JAVA Runtime Environment 7 or newer](http://ope
 
 #### Download:
 
-The [binary archives](http://sourceforge.net/projects/oss-text-extractor/files/v1.0/oss-text-extractor-1.0.0-exec.jar/download) are available at SourceForge
+The [binary archives](http://sourceforge.net/projects/oss-text-extractor/files/v1.0/) are available at SourceForge
+
 To follow this quickstart please download [oss-text-extractor-1.0-exec.jar](http://sourceforge.net/projects/oss-text-extractor/files/v1.0/oss-text-extractor-1.0.0-exec.jar/download)
 
 #### Or clone and compile:
