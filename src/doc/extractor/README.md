@@ -8,6 +8,7 @@ This is the list of existing text extractor. Click on the links to have more det
   * [docx](docx.md)
   * [html](html.md)
   * [image](image.md)
+  * [markdown](markdown.md)
   * [odf (ODT, ODS, ODP)](odf.md)
   * [pdfbox](pdfbox.md)
   * [ppt](ppt.md)
