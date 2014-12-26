@@ -88,6 +88,14 @@ If the file is already available in the server, the follow API can be used:
 curl -XGET http://localhost:9091/pdfbox?path=/home/user/myfile.pdf
 ```
 
+Issues and change Log
+---------------------
+
+Issues and milestones are tracked on GitHub:
+
+- [Open issues](https://github.com/opensearchserver/oss-text-extractor/issues?q=is%3Aopen+is%3Aissue)
+- [Closed issues](https://github.com/opensearchserver/oss-text-extractor/issues?q=is%3Aissue+is%3Aclosed)
+
 License
 -------
 
