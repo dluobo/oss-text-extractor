@@ -18,46 +18,17 @@ package com.opensearchserver.textextractor.parser;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.pegdown.LinkRenderer;
 import org.pegdown.PegDownProcessor;
-import org.pegdown.ast.AbbreviationNode;
-import org.pegdown.ast.AutoLinkNode;
-import org.pegdown.ast.BlockQuoteNode;
-import org.pegdown.ast.BulletListNode;
-import org.pegdown.ast.CodeNode;
-import org.pegdown.ast.DefinitionListNode;
+import org.pegdown.ToHtmlSerializer;
 import org.pegdown.ast.DefinitionNode;
 import org.pegdown.ast.DefinitionTermNode;
-import org.pegdown.ast.ExpImageNode;
-import org.pegdown.ast.ExpLinkNode;
 import org.pegdown.ast.HeaderNode;
-import org.pegdown.ast.HtmlBlockNode;
-import org.pegdown.ast.InlineHtmlNode;
 import org.pegdown.ast.ListItemNode;
-import org.pegdown.ast.MailLinkNode;
-import org.pegdown.ast.Node;
-import org.pegdown.ast.OrderedListNode;
 import org.pegdown.ast.ParaNode;
-import org.pegdown.ast.QuotedNode;
-import org.pegdown.ast.RefImageNode;
-import org.pegdown.ast.RefLinkNode;
-import org.pegdown.ast.ReferenceNode;
 import org.pegdown.ast.RootNode;
-import org.pegdown.ast.SimpleNode;
-import org.pegdown.ast.SpecialTextNode;
-import org.pegdown.ast.StrikeNode;
-import org.pegdown.ast.StrongEmphSuperNode;
 import org.pegdown.ast.SuperNode;
-import org.pegdown.ast.TableBodyNode;
-import org.pegdown.ast.TableCaptionNode;
-import org.pegdown.ast.TableCellNode;
-import org.pegdown.ast.TableColumnNode;
-import org.pegdown.ast.TableHeaderNode;
-import org.pegdown.ast.TableNode;
-import org.pegdown.ast.TableRowNode;
 import org.pegdown.ast.TextNode;
-import org.pegdown.ast.VerbatimNode;
-import org.pegdown.ast.Visitor;
-import org.pegdown.ast.WikiLinkNode;
 
 import com.opensearchserver.textextractor.ParserAbstract;
 import com.opensearchserver.textextractor.ParserDocument;
@@ -95,8 +66,9 @@ public class Markdown extends ParserAbstract {
 	private void parseContent(char[] source) throws Exception {
 		// PegDownProcessor is not thread safe One processor per thread
 		PegDownProcessor pdp = new PegDownProcessor();
-		pdp.parseMarkdown(source).accept(new ExtractVisitor());
+		RootNode rootNode = pdp.parseMarkdown(source);
 		result = getNewParserDocument();
+		rootNode.accept(new ExtractorSerializer());
 		result.add(LANG_DETECTION, languageDetection(CONTENT, 10000));
 	}
 
@@ -105,175 +77,82 @@ public class Markdown extends ParserAbstract {
 		parseContent(IOUtils.toCharArray(inputStream));
 	}
 
-	public class ExtractVisitor implements Visitor {
+	public class ExtractorSerializer extends ToHtmlSerializer {
 
 		@Override
-		public void visit(AbbreviationNode node) {
+		public void visit(RootNode node) {
+			super.visit(node);
+			nextContent();
 		}
 
-		@Override
-		public void visit(AutoLinkNode node) {
-			result.add(CONTENT, node.getText());
+		protected void nextContent() {
+			if (printer.sb.length() == 0)
+				return;
+			result.add(CONTENT, printer.sb.toString());
+			printer.clear();
 		}
 
-		@Override
-		public void visit(BlockQuoteNode node) {
-		}
-
-		@Override
-		public void visit(BulletListNode node) {
-		}
-
-		@Override
-		public void visit(CodeNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(DefinitionListNode node) {
+		public ExtractorSerializer() {
+			super(new LinkRenderer());
 		}
 
 		@Override
 		public void visit(DefinitionNode node) {
+			super.visit(node);
+			nextContent();
 		}
 
 		@Override
 		public void visit(DefinitionTermNode node) {
-		}
-
-		@Override
-		public void visit(ExpImageNode node) {
-			result.add(CONTENT, node.title);
-			result.add(URL, node.url);
-		}
-
-		@Override
-		public void visit(ExpLinkNode node) {
-			result.add(CONTENT, node.title);
-			result.add(URL, node.url);
-		}
-
-		@Override
-		public void visit(HeaderNode node) {
-		}
-
-		@Override
-		public void visit(HtmlBlockNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(InlineHtmlNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(ListItemNode node) {
-		}
-
-		@Override
-		public void visit(MailLinkNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(OrderedListNode node) {
+			super.visit(node);
+			nextContent();
 		}
 
 		@Override
 		public void visit(ParaNode node) {
+			super.visit(node);
+			nextContent();
 		}
 
 		@Override
-		public void visit(QuotedNode node) {
+		public void visit(HeaderNode node) {
+			super.visit(node);
+			nextContent();
 		}
 
 		@Override
-		public void visit(ReferenceNode node) {
-			result.add(CONTENT, node.getTitle());
-			result.add(URL, node.getUrl());
+		public void visit(ListItemNode node) {
+			super.visit(node);
+			nextContent();
 		}
 
 		@Override
-		public void visit(RefImageNode node) {
+		protected void printTag(TextNode node, String tag) {
+			printer.print(node.getText());
 		}
 
 		@Override
-		public void visit(RefLinkNode node) {
+		protected void printTag(SuperNode node, String tag) {
+			visitChildren(node);
 		}
 
 		@Override
-		public void visit(RootNode node) {
+		protected void printIndentedTag(SuperNode node, String tag) {
+			nextContent();
+			visitChildren(node);
+			nextContent();
 		}
 
 		@Override
-		public void visit(SimpleNode node) {
+		protected void printImageTag(LinkRenderer.Rendering rendering) {
+			result.add(URL, rendering.href);
+			printer.print(rendering.text);
 		}
 
 		@Override
-		public void visit(SpecialTextNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(StrikeNode node) {
-		}
-
-		@Override
-		public void visit(StrongEmphSuperNode node) {
-		}
-
-		@Override
-		public void visit(TableBodyNode node) {
-		}
-
-		@Override
-		public void visit(TableCaptionNode node) {
-		}
-
-		@Override
-		public void visit(TableCellNode node) {
-		}
-
-		@Override
-		public void visit(TableColumnNode node) {
-		}
-
-		@Override
-		public void visit(TableHeaderNode node) {
-		}
-
-		@Override
-		public void visit(TableNode node) {
-		}
-
-		@Override
-		public void visit(TableRowNode node) {
-		}
-
-		@Override
-		public void visit(VerbatimNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(WikiLinkNode node) {
-			result.add(CONTENT, node.getText());
-		}
-
-		@Override
-		public void visit(TextNode node) {
-			System.out.println("TEXT: node.getText()");
-			result.add(CONTENT, node.getText());
-
-		}
-
-		@Override
-		public void visit(SuperNode node) {
-		}
-
-		@Override
-		public void visit(Node node) {
+		protected void printLink(LinkRenderer.Rendering rendering) {
+			result.add(URL, rendering.href);
+			printer.print(rendering.text);
 		}
 	}
 

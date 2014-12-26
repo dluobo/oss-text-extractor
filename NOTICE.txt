@@ -27,6 +27,10 @@ This project includes:
   Apache PDFBox under The Apache Software License, Version 2.0
   Apache PDFBox for Ant under The Apache Software License, Version 2.0
   Apache POI under The Apache Software License, Version 2.0
+  ASM Analysis under BSD
+  ASM Core under BSD
+  ASM Tree under BSD
+  ASM Util under BSD
   Async Http Servlet 3.0 under Apache License, Version 2.0
   Common Annotations 1.1 API under CDDL or GPLv2 with exceptions
   Common Annotations 1.2 API under CDDL or GPLv2 with exceptions
@@ -50,6 +54,9 @@ This project includes:
   ODF Custom Javadoc Taglets under Apache 2
   ODFDOM under Apache 2
   OpenSearchServer Text Extractor under Apache License, Version 2.0
+  parboiled-core under Apache 2
+  parboiled-java under Apache 2
+  pegdown under Apache 2
   Resteasy Jackson Provider under Apache License, Version 2.0
   RESTEasy JAX-RS Client under Apache License, Version 2.0
   RESTEasy JAX-RS Implementation under Apache License, Version 2.0
