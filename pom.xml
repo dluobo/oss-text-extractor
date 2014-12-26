@@ -41,8 +41,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<resteasy.version>3.0.10.Final</resteasy.version>
-		<undertow.version>1.1.0.Final</undertow.version>
-		<poi.version>3.11-beta3</poi.version>
+		<undertow.version>1.1.1.Final</undertow.version>
+		<poi.version>3.11</poi.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox-ant</artifactId>
-			<version>1.8.7</version>
+			<version>1.8.8</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -144,6 +144,11 @@
 			<groupId>org</groupId>
 			<artifactId>jaudiotagger</artifactId>
 			<version>2.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.pegdown</groupId>
+			<artifactId>pegdown</artifactId>
+			<version>1.4.2</version>
 		</dependency>
 	</dependencies>
 	<build>

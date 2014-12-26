@@ -26,6 +26,7 @@ import com.opensearchserver.textextractor.parser.Audio;
 import com.opensearchserver.textextractor.parser.Doc;
 import com.opensearchserver.textextractor.parser.Docx;
 import com.opensearchserver.textextractor.parser.Image;
+import com.opensearchserver.textextractor.parser.Markdown;
 import com.opensearchserver.textextractor.parser.Odf;
 import com.opensearchserver.textextractor.parser.PdfBox;
 import com.opensearchserver.textextractor.parser.Ppt;
@@ -50,6 +51,7 @@ public class ParserList {
 		register(Docx.class);
 		register(Image.class);
 		register(Odf.class);
+		register(Markdown.class);
 		register(PdfBox.class);
 		register(Ppt.class);
 		register(Pptx.class);

@@ -10,7 +10,7 @@ An open source RESTFul Web Service for text extraction and analysis.
 - Publishing (pdf, pub)
 - Web (rss, html/xhtml)
 - Medias (audio, images)
-- Others (vsd, text)
+- Others (vsd, text, markdown)
 
 Links
 -----
@@ -34,9 +34,9 @@ Check that you have installed a [JAVA Runtime Environment 7 or newer](http://ope
 
 #### Download:
 
-The [binary archives](http://sourceforge.net/projects/oss-text-extractor/files/v1.0/) are available at SourceForge
+The [binary archives](http://sourceforge.net/projects/oss-text-extractor/files/v1.1/) are available at SourceForge
 
-To follow this quickstart please download [oss-text-extractor-1.0-exec.jar](http://sourceforge.net/projects/oss-text-extractor/files/v1.0/oss-text-extractor-1.0.0-exec.jar/download)
+To follow this quickstart please download [oss-text-extractor-1.1-exec.jar](http://sourceforge.net/projects/oss-text-extractor/files/v1.1/oss-text-extractor-1.1.0-exec.jar/download)
 
 #### Or clone and compile:
 
@@ -76,17 +76,25 @@ curl -XGET http://localhost:9091/pdfbox
     
 #### Submit a document to a parser
 
-By upload a document:
+By uploading a document:
 
 ```shell
 curl -XPUT --data-binary @tutorial.pdf http://localhost:9091/pdfbox
 ```
     
-If the file is already available in the server, the follow API is available:
+If the file is already available in the server, the follow API can be used:
 
 ```shell
 curl -XGET http://localhost:9091/pdfbox?path=/home/user/myfile.pdf
 ```
+
+Issues and change Log
+---------------------
+
+Issues and milestones are tracked on GitHub:
+
+- [Open issues](https://github.com/opensearchserver/oss-text-extractor/issues?q=is%3Aopen+is%3Aissue)
+- [Closed issues](https://github.com/opensearchserver/oss-text-extractor/issues?q=is%3Aissue+is%3Aclosed)
 
 License
 -------

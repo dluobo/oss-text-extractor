@@ -36,6 +36,7 @@ import com.opensearchserver.textextractor.parser.Audio;
 import com.opensearchserver.textextractor.parser.Doc;
 import com.opensearchserver.textextractor.parser.Docx;
 import com.opensearchserver.textextractor.parser.Image;
+import com.opensearchserver.textextractor.parser.Markdown;
 import com.opensearchserver.textextractor.parser.Odf;
 import com.opensearchserver.textextractor.parser.PdfBox;
 import com.opensearchserver.textextractor.parser.Ppt;
@@ -205,6 +206,10 @@ public class AllTest {
 
 	public void testImageTiff() throws Exception {
 		doTest(Image.class, "file.tiff", null);
+	}
+
+	public void testMarkdown() throws Exception {
+		doTest(Markdown.class, "file.md", "extract data to be indexed");
 	}
 
 	public void testPdf() throws Exception {
